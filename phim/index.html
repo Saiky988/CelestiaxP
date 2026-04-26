@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sọt Phim — Chi tiết phim</title>
+  <title>Sọt Phim — Đang tải...</title>
   <meta name="description" content="Sọt Phim - Xem phim online miễn phí chất lượng cao.">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -52,7 +52,7 @@
     .overlay.show { opacity: 1; pointer-events: auto; }
 
     /* =========================================
-       HEADER (PREMIUM FROSTED GLASS)
+       2. HEADER (PREMIUM FROSTED GLASS)
     ========================================= */
     header.app-header {
       position: sticky;
@@ -160,7 +160,7 @@
     @media (max-width:700px){ .search-input.open { width: 245px; } }
 
     /* =========================================
-       FLOATING GLASS ISLAND MENU
+       3. FLOATING GLASS ISLAND MENU
     ========================================= */
     .side-menu {
       position: fixed; top: calc(var(--header-h) + 12px); left: -320px; width: 280px;
@@ -227,174 +227,165 @@
     }
 
     /* =========================================
-       UNIFIED MOVIE PAGE (PREMIUM GLASSMORPHISM)
+       4. MOVIE PLAYER SECTION (STYLE CŨ PREMIUM CỦA BẠN)
     ========================================= */
-    .movie-page-wrapper {
-      position: relative;
-      width: 100%;
-      min-height: 100vh;
-      padding-bottom: 50px;
+    .movie-player {
+      position: relative; width: 100%; height: 90vh; display: flex;
+      align-items: center; justify-content: center; overflow: hidden; background: #071422;
+    }
+    .movie-player::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at center, rgba(255,255,255,.05), transparent 60%);
+      pointer-events: none; z-index: 1;
+    }
+    .player-bg { position: absolute; inset: 0; width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 0; transition: background 0.5s ease;}
+    .player-bg::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(to top, rgba(7,20,34,1) 0%, rgba(7,20,34,.95) 35%, rgba(7,20,34,.7) 45%, rgba(7,20,34,0) 70%),
+                  radial-gradient(circle at center, rgba(0,0,0,0) 35%, rgba(0,0,0,.4) 70%, rgba(0,0,0,.8) 100%);
     }
 
-    /* --- BACKDROP NỀN --- */
-    .hero-backdrop {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 85vh;
-      background-size: cover;
-      background-position: center top;
-      z-index: 0;
-      mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+    .player-center { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding-bottom: 100px; }
+    
+    .poster-wrapper {
+      position: relative; width: 110px; aspect-ratio: 1448/2188; border-radius: 22px;
+      overflow: hidden; margin-top: -50px; margin-bottom: 30px; transform: translateZ(0);
+      transition: all .45s cubic-bezier(.2,.8,.2,1);
+      box-shadow: 0 60px 120px rgba(0,0,0,.95), 0 25px 60px rgba(0,0,0,.7), 0 8px 20px rgba(0,0,0,.6);
     }
-    .hero-backdrop-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to right, rgba(7, 20, 34, 0.9) 0%, rgba(7, 20, 34, 0.5) 50%, rgba(7, 20, 34, 0.8) 100%);
+    .poster-wrapper::before {
+      content: ''; position: absolute; inset: 0; border-radius: 22px; padding: 1px;
+      background: linear-gradient(145deg, rgba(255,255,255,.6), rgba(255,255,255,0) 40%, rgba(255,255,255,.15) 70%, rgba(255,255,255,0));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
     }
+    .poster-wrapper:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 90px 160px rgba(0,0,0,1), 0 40px 80px rgba(0,0,0,.85), 0 0 40px rgba(245,222,136,.15); }
+    .poster-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; filter: contrast(1.05) saturate(1.05); transition: .4s ease; }
+    .poster-wrapper:hover img { transform: scale(1.02); }
 
-    /* --- CONTAINER --- */
-    .unified-container, .sk-container {
-      position: relative;
-      z-index: 2;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: calc(var(--header-h) + 40px) 20px 20px;
+    .movie-title { position: relative; text-align: center; color: #fff; width: 95%; max-width: 800px; margin: 0 auto; z-index: 3; line-height: 1.15; }
+    .movie-title h1 {
+      margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+      background: linear-gradient(#fff,#cfcfcf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 6px 30px rgba(0,0,0,.9);
     }
+    .movie-title .sub-title { display: block; margin-top: 4px; font-size: 12px; color: #9aa4b2; letter-spacing: .8px; opacity: 1; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
 
-    /* --- HERO LAYOUT (POSTER + INFO) --- */
-    .hero-layout {
-      display: flex;
-      gap: 40px;
-      align-items: flex-end;
-      margin-bottom: 50px;
-    }
-
-    .hero-poster-wrap {
-      flex: 0 0 240px;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1);
-      transform: translateY(20px);
-      transition: transform 0.4s ease;
-    }
-    .hero-poster-wrap:hover { transform: translateY(10px) scale(1.02); }
-    .hero-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
-
-    .hero-info { flex: 1; min-width: 0; padding-bottom: 10px; }
-    .hero-title { font-size: 42px; font-weight: 800; line-height: 1.1; margin: 0 0 8px; text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
-    .hero-subtitle { font-size: 16px; color: var(--muted); margin: 0 0 24px; font-weight: 500; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-
-    .hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-    .meta-tag {
-      background: rgba(255,255,255,0.05); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
-      border: 1px solid rgba(255,255,255,0.05); color: #e6eef8;
-    }
-    .meta-tag.highlight { background: rgba(255, 107, 107, 0.15); color: var(--accent); border-color: rgba(255, 107, 107, 0.3); }
-
-    .hero-scores { display: flex; gap: 16px; margin-bottom: 30px; }
-    .score-box { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-    .score-box i.fa-imdb { color: #f5c518; font-size: 24px; }
-    .score-box i.fa-star { color: #01b4e4; font-size: 20px; }
-
-    /* --- NÚT BẤM --- */
-    .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .movie-card { margin-top: 20px; position: relative; display: flex; justify-content: center; z-index: 4; }
     .watch-btn {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 14px 32px; border-radius: 50px;
-      background: linear-gradient(135deg, #ff4b2b, #ff416c); color: #fff;
-      font-weight: 700; font-size: 15px; text-decoration: none;
-      box-shadow: 0 10px 25px rgba(255, 75, 43, 0.4);
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 12px;
+      padding: 14px 38px; border-radius: 50px; background: linear-gradient(145deg,#fff3b0 0%,#f5de88 30%,#d4b44d 70%,#b8922f 100%);
+      color: #071422; font-weight: 700; font-size: 15px; letter-spacing: .5px; text-decoration: none;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,.6), inset 0 -4px 8px rgba(0,0,0,.15), 0 10px 30px rgba(212,180,77,.35), 0 4px 12px rgba(0,0,0,.5);
+      transition: .35s cubic-bezier(.4,0,.2,1);
     }
-    .watch-btn:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 15px 35px rgba(255, 75, 43, 0.6); }
+    .watch-btn::before {
+      content: ''; position: absolute; top: 0; left: -120%; width: 80%; height: 100%;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.5) 50%, transparent 100%); transform: skewX(-20deg); transition: .6s;
+    }
+    .watch-btn:hover::before { left: 130%; }
+    .watch-btn:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: inset 0 2px 4px rgba(255,255,255,.8), inset 0 -6px 10px rgba(0,0,0,.2), 0 15px 40px rgba(212,180,77,.5), 0 8px 20px rgba(0,0,0,.6);
+    }
+    .watch-btn i { font-size: 16px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
 
-    .action-btn-group { display: flex; gap: 10px; }
+    .movie-actions { margin-top: 18px; display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; z-index: 4; }
     .action-btn {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 12px 18px; border-radius: 50px;
-      background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.1); color: #cfd6e4;
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      transition: all 0.3s ease;
+      min-width: 100px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: 30px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); color: #cfd6e4; font-size: 10px; font-weight: 600;
+      backdrop-filter: blur(6px); cursor: pointer; transition: background .3s ease, color .3s ease, box-shadow .3s ease, transform .25s ease;
     }
-    .action-btn:hover { background: rgba(255,255,255,0.15); color: #fff; transform: translateY(-2px); }
-    .action-btn.active { color: var(--accent); border-color: rgba(255, 107, 107, 0.4); background: rgba(255, 107, 107, 0.1); }
+    .action-btn.active { background: linear-gradient(135deg,#f5de88,#d4b44d); color: #071422; border: 1px solid transparent; box-shadow: 0 10px 25px rgba(212,180,77,.35); }
+    .action-btn i { font-size: 12px; transition: .3s ease; }
+    .action-btn span { transition: opacity .2s ease; }
     .action-btn.changing span { opacity: 0; }
 
-    /* --- CHI TIẾT DƯỚI (GLASS PANEL) --- */
-    .details-layout { display: flex; flex-direction: column; gap: 30px; }
-    .glass-panel {
-      background: rgba(16, 24, 40, 0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      padding: 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
-    }
-    .detail-block h3 { font-size: 18px; margin: 0 0 16px; display: flex; align-items: center; gap: 10px; color: #fff; }
-    .detail-block h3 i { color: var(--accent); }
-    .desc-content { font-size: 14px; line-height: 1.8; color: #cbd5e1; }
+/* =========================================
+   MOVIE DETAIL SECTION (ĐÃ FIX: NẰM DƯỚI PLAYER, KHÔNG PHẢI POPUP)
+========================================= */
+.movie-detail-section {
+  position: relative;
+  background: transparent;
+  z-index: 10;
+  padding-bottom: 50px;
+}
 
-    /* Cast List */
-    .cast-list { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; scrollbar-width: none; }
-    .cast-list::-webkit-scrollbar { display: none; }
-    .cast-item {
-      flex: 0 0 100px; scroll-snap-align: start; text-align: center;
-      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 12px; padding: 12px 8px; transition: transform 0.3s ease;
-    }
-    .cast-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08); }
-    .cast-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid rgba(255,255,255,0.1); }
-    .cast-name { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .cast-char { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.detail-container, .sk-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  display: block; /* Ghi đè flex cũ */
+}
 
-    /* Keyword List */
-    .keyword-list { display: flex; flex-wrap: wrap; gap: 8px; }
-    .kw-item { font-size: 12px; padding: 8px 14px; background: rgba(255,255,255,0.05); border-radius: 8px; color: #9aa4b2; text-decoration: none; transition: 0.2s; border: 1px solid transparent; }
-    .kw-item:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
+/* ẨN CÁC THÀNH PHẦN THỪA CỦA POPUP CŨ */
+.btn-close-detail, 
+.detail-backdrop, 
+.detail-left, 
+.detail-title, 
+.detail-origin-title {
+  display: none !important;
+}
 
-    /* --- SKELETON MỚI --- */
-    .sk-unified { display: block; position: relative; }
-    .sk-backdrop { width: 100%; height: 60vh; position: absolute; top:0; left:0; z-index: 0; }
-    .sk-container { display: flex; gap: 40px; align-items: flex-end; padding-top: 15vh; }
-    .sk-poster { flex: 0 0 240px; aspect-ratio: 2/3; border-radius: 16px; transform: translateY(20px); }
-    .sk-main-info { flex: 1; display: flex; flex-direction: column; gap: 16px; }
-    .sk-title { height: 50px; width: 60%; border-radius: 8px; }
-    .sk-meta { height: 30px; width: 40%; border-radius: 8px; }
-    .sk-buttons { height: 50px; width: 80%; border-radius: 25px; margin-top: 10px; }
-    .sk-desc { height: 16px; width: 100%; border-radius: 4px; }
+.detail-right { width: 100%; }
 
-    /* Hiệu ứng Skeleton chung */
-    .skeleton-box {
-      background-color: #1a2332; position: relative; overflow: hidden; border-radius: 12px;
-    }
-    .skeleton-box::after {
-      content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; transform: translateX(-100%);
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0) 100%);
-      animation: shimmer 1.5s infinite;
-    }
+/* Canh giữa các meta cho đẹp mắt đồng bộ với Player bên trên */
+.detail-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center; }
+.meta-tag {
+  background: rgba(255,255,255,0.08); backdrop-filter: blur(8px);
+  padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.05); color: #e6eef8;
+}
+.meta-tag.highlight { background: rgba(255, 107, 107, 0.15); color: var(--accent); border-color: rgba(255, 107, 107, 0.3); }
 
-    /* --- RESPONSIVE MOBILE --- */
-    @media (max-width: 768px) {
-      .hero-backdrop { height: 60vh; mask-image: linear-gradient(to bottom, black 20%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%); }
-      .hero-backdrop-overlay { background: linear-gradient(to top, rgba(7, 20, 34, 1) 0%, rgba(7, 20, 34, 0.4) 100%); }
-      .unified-container, .sk-container { padding-top: calc(var(--header-h) + 20px); }
-      
-      .hero-layout, .sk-container { flex-direction: column; align-items: center; text-align: center; gap: 20px; margin-bottom: 30px; }
-      .hero-poster-wrap, .sk-poster { flex: 0 0 200px; width: 200px; transform: none; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
-      
-      .hero-title { font-size: 32px; }
-      .hero-meta { justify-content: center; }
-      .hero-scores { justify-content: center; }
-      .hero-actions { justify-content: center; }
-      .watch-btn { width: 100%; justify-content: center; }
-      .action-btn-group { width: 100%; justify-content: space-between; margin-top: 10px; }
-      .action-btn { flex: 1; padding: 12px 10px; font-size: 11px; }
-      
-      .sk-title, .sk-meta, .sk-buttons { width: 100%; }
-    }
+.detail-scores { display: flex; gap: 16px; margin-bottom: 30px; justify-content: center;}
+.score-box { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; }
+.score-box i.fa-imdb { color: #f5c518; font-size: 24px; }
+.score-box i.fa-star { color: #01b4e4; font-size: 20px; }
+
+.detail-desc {
+  font-size: 14px; line-height: 1.8; color: #cbd5e1;
+  background: rgba(16, 24, 40, 0.5); backdrop-filter: blur(10px);
+  padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 30px;
+}
+
+/* Block dùng chung */
+.detail-block { margin-bottom: 30px; }
+.detail-block h3 { font-size: 18px; margin: 0 0 16px; display: flex; align-items: center; gap: 8px; color: #fff; }
+.detail-block h3 i { color: var(--accent); }
+
+/* Cast List */
+.cast-list {
+  display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-bottom: 10px; scrollbar-width: none;
+}
+.cast-list::-webkit-scrollbar { display: none; }
+.cast-item {
+  flex: 0 0 100px; scroll-snap-align: start;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px; padding: 10px; text-align: center;
+  transition: transform 0.3s ease;
+}
+.cast-item:hover { transform: translateY(-5px); background: rgba(255,255,255,0.08); }
+.cast-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid rgba(255,255,255,0.1); }
+.cast-name { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cast-char { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Keyword List */
+.keyword-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.kw-item { font-size: 11px; padding: 6px 10px; background: rgba(255,255,255,0.05); border-radius: 6px; color: #9aa4b2; text-decoration: none; transition: 0.2s; }
+.kw-item:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* --- SKELETON UI --- */
+.movie-skeleton { display: block; }
+.sk-container { display: flex; justify-content: center; }
+.sk-info { width: 100%; max-width: 800px; display: flex; flex-direction: column; align-items: center; gap: 16px;}
+.sk-meta { height: 30px; width: 60%; border-radius: 8px; }
+.sk-desc { height: 16px; width: 100%; border-radius: 4px; }
+.sk-cast-wrap { display: flex; gap: 16px; margin-top: 20px; width: 100%; justify-content: center;}
+.sk-cast { width: 100px; height: 120px; border-radius: 12px; }
 
     /* =========================================
-       FOOTER & SOVEREIGNTY BADGE
+       5. FOOTER & SOVEREIGNTY BADGE
     ========================================= */
     .sovereignty-wrap { display: flex; justify-content: center; margin-top: -15px; margin-bottom: 25px; position: relative; z-index: 10; }
     .footer-sovereignty {
@@ -490,66 +481,67 @@
 
   <div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
 
-  <main class="movie-page-wrapper">
-    
-    <div id="movieSkeleton" class="sk-unified">
-      <div class="sk-backdrop skeleton-box"></div>
+  <section class="movie-player">
+    <div class="player-bg" id="playerBg" style="background-image:url('https://img.ophim.live/uploads/movies/jujutsu-kaisen-0-chu-thuat-hoi-chien-thumb.jpg')"></div>
+
+    <div class="player-center">
+      <div class="poster-wrapper">
+        <img id="playerPoster" src="https://img.ophim.live/uploads/movies/jujutsu-kaisen-0-chu-thuat-hoi-chien-thumb.jpg" alt="Poster">
+      </div>
+
+      <div class="movie-title">
+        <h1 id="playerTitle">Đang Tải...</h1>
+        <span id="playerSubTitle" class="sub-title">Vui lòng đợi một chút</span>
+      </div>
+
+      <div class="movie-card">
+        <a href="#" id="playerWatchBtn" class="watch-btn">
+          <i class="fa-solid fa-play"></i>
+          <span>Xem Ngay</span>
+        </a>
+      </div>
+
+      <div class="movie-actions">
+        <button class="action-btn like">
+          <i class="fa-regular fa-heart"></i>
+          <span>Yêu Thích</span>
+        </button>
+        <button class="action-btn bookmark">
+          <i class="fa-regular fa-bookmark"></i>
+          <span>Thêm Vào</span>
+        </button>
+        <button class="action-btn share">
+          <i class="fa-solid fa-share-from-square"></i>
+          <span>Chia Sẻ</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section id="movieDetailSection" class="movie-detail-section">
+    <div id="movieSkeleton" class="movie-skeleton">
       <div class="sk-container">
-        <div class="sk-poster skeleton-box"></div>
-        <div class="sk-main-info">
-          <div class="sk-title skeleton-box"></div>
+        <div class="sk-info">
           <div class="sk-meta skeleton-box"></div>
-          <div class="sk-buttons skeleton-box"></div>
           <div class="sk-desc skeleton-box"></div>
-          <div class="sk-desc skeleton-box" style="width: 70%"></div>
+          <div class="sk-desc skeleton-box"></div>
+          <div class="sk-desc skeleton-box" style="width: 60%"></div>
+          <div class="sk-cast-wrap">
+            <div class="sk-cast skeleton-box"></div>
+            <div class="sk-cast skeleton-box"></div>
+            <div class="sk-cast skeleton-box"></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div id="movieContent" class="movie-content-unified" style="opacity: 0; display: none;">
-      
-      <div class="hero-backdrop" id="heroBackdrop">
-        <div class="hero-backdrop-overlay"></div>
-      </div>
+    <div id="movieContent" class="movie-content" style="opacity: 0;">
+      <div class="detail-container">
+        <div class="detail-right">
+          <div class="detail-meta" id="detailMeta"></div>
+          <div class="detail-scores" id="detailScores"></div>
 
-      <div class="unified-container">
-        
-        <div class="hero-layout">
-          <div class="hero-poster-wrap">
-            <img id="detailPoster" src="" alt="Poster" class="hero-poster" />
-          </div>
-
-          <div class="hero-info">
-            <h1 id="detailTitle" class="hero-title">Đang tải...</h1>
-            <h2 id="detailOriginTitle" class="hero-subtitle">Loading...</h2>
-
-            <div class="hero-meta" id="detailMeta"></div>
-            <div class="hero-scores" id="detailScores"></div>
-
-            <div class="hero-actions">
-              <a href="#" id="watchBtn" class="watch-btn">
-                <i class="fa-solid fa-play"></i> <span>Xem Phim Ngay</span>
-              </a>
-              <div class="action-btn-group">
-                <button class="action-btn like">
-                  <i class="fa-regular fa-heart"></i> <span>Yêu Thích</span>
-                </button>
-                <button class="action-btn bookmark">
-                  <i class="fa-regular fa-bookmark"></i> <span>Thêm Vào</span>
-                </button>
-                <button class="action-btn share">
-                  <i class="fa-solid fa-share-from-square"></i> <span>Chia Sẻ</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="details-layout">
-          <div class="detail-block glass-panel">
-            <h3><i class="fa-solid fa-align-left"></i> Nội dung phim</h3>
-            <div id="detailDesc" class="desc-content">Đang tải nội dung...</div>
-          </div>
+          <div class="detail-desc" id="detailDesc">Nội dung phim sẽ được hiển thị ở đây...</div>
 
           <div class="detail-block">
             <h3><i class="fa-solid fa-user-astronaut"></i> Diễn Viên</h3>
@@ -561,10 +553,10 @@
             <div class="keyword-list" id="detailKeywords"></div>
           </div>
         </div>
-
       </div>
     </div>
-  </main>
+  </section>
+
 
   <footer class="site-footer">
     <div class="sovereignty-wrap">
@@ -599,7 +591,7 @@
   </footer>
 
 <script>
-// --- DATA GỌN NHẸ CHO MENU ---
+// --- DATA GỌN NHẸ ---
 const khuVucData = { data: { items: [ ["Trung Quốc","trung-quoc"], ["Hàn Quốc","han-quoc"], ["Nhật Bản","nhat-ban"], ["Thái Lan","thai-lan"], ["Âu Mỹ","au-my"], ["Đài Loan","dai-loan"], ["Hồng Kông","hong-kong"], ["Ấn Độ","an-do"], ["Anh","anh"], ["Pháp","phap"], ["Canada","canada"], ["Quốc Gia Khác","quoc-gia-khac"], ["Đức","duc"], ["Tây Ban Nha","tay-ban-nha"], ["Thổ Nhĩ Kỳ","tho-nhi-ky"], ["Hà Lan","ha-lan"], ["Indonesia","indonesia"], ["Nga","nga"], ["Mexico","mexico"], ["Ba lan","ba-lan"], ["Úc","uc"], ["Thụy Điển","thuy-dien"], ["Malaysia","malaysia"], ["Brazil","brazil"], ["Philippines","philippines"], ["Bồ Đào Nha","bo-dao-nha"], ["Ý","y"], ["Đan Mạch","dan-mach"], ["UAE","uae"], ["Na Uy","na-uy"], ["Thụy Sĩ","thuy-si"], ["Châu Phi","chau-phi"], ["Nam Phi","nam-phi"], ["Ukraina","ukraina"], ["Ả Rập Xê Út","a-rap-xe-ut"], ["Bỉ","bi"], ["Ireland","ireland"], ["Colombia","colombia"], ["Phần Lan","phan-lan"], ["Việt Nam","viet-nam"], ["Chile","chile"], ["Hy Lạp","hy-lap"], ["Nigeria","nigeria"], ["Argentina","argentina"], ["Singapore","singapore"] ].map(([name, slug]) => ({ name, slug })) }};
 const theLoaiData = { data: { items: [ ["Hành Động","hanh-dong"], ["Tình Cảm","tinh-cam"], ["Hài Hước","hai-huoc"], ["Cổ Trang","co-trang"], ["Tâm Lý","tam-ly"], ["Hình Sự","hinh-su"], ["Chiến Tranh","chien-tranh"], ["Thể Thao","the-thao"], ["Võ Thuật","vo-thuat"], ["Viễn Tưởng","vien-tuong"], ["Phiêu Lưu","phieu-luu"], ["Khoa Học","khoa-hoc"], ["Kinh Di","kinh-di"], ["Âm Nhạc","am-nhac"], ["Thần Thoại","than-thoai"], ["Tài Liệu","tai-lieu"], ["Gia Đình","gia-dinh"], ["Chính kịch","chinh-kich"], ["Bí ẩn","bi-an"], ["Học Đường","hoc-duong"], ["Kinh Điển","kinh-dien"], ["Phim 18+","phim-18"], ["Short Drama","short-drama"] ].map(([name, slug]) => ({ name, slug })) }};
 
@@ -623,17 +615,20 @@ const brand = document.querySelector('.brand');
 const searchIcon = searchBtn ? searchBtn.querySelector('i') : null;
 const iconContainer = hamburger ? hamburger.querySelector('.hamburger-icon') : null;
 
-// --- KHỞI TẠO MENU & UI ---
+// --- KHỞI TẠO MENU ---
 function initDropdowns() {
   const configs = [
     { triggerId: 'dropKhuVuc', containerId: 'listKhuVuc', data: khuVucData.data.items, path: 'quoc-gia' },
     { triggerId: 'dropTheLoai', containerId: 'listTheLoai', data: theLoaiData.data.items, path: 'the-loai' }
   ];
+
   configs.forEach(conf => {
     const container = document.getElementById(conf.containerId);
     const trigger = document.getElementById(conf.triggerId);
     if (!container || !trigger) return;
+
     container.innerHTML = conf.data.map(item => `<a href="/${conf.path}/${item.slug}">${item.name}</a>`).join('');
+
     trigger.addEventListener('click', (e) => {
       e.preventDefault(); e.stopPropagation();
       document.querySelectorAll('.dropdown-content').forEach(el => { if(el.id !== conf.containerId) el.classList.remove('show'); });
@@ -643,6 +638,7 @@ function initDropdowns() {
       if (isOpen) setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 300);
     });
   });
+
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.menu-item-dropdown')) {
       document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('show'));
@@ -651,14 +647,16 @@ function initDropdowns() {
   });
 }
 
+// --- SETUP NÚT BẤM HIỆU ỨNG ---
 function setupActionBtn(selector, textActive, textInactive) {
   document.querySelectorAll(selector).forEach(btn => {
     btn.addEventListener('click', () => {
-      btn.classList.add('changing');
+      btn.classList.add('changing'); 
       setTimeout(() => {
         btn.classList.toggle('active');
         const icon = btn.querySelector('i');
         const text = btn.querySelector('span');
+
         if(btn.classList.contains('active')){
           icon.classList.replace('fa-regular', 'fa-solid'); text.textContent = textActive;
         } else {
@@ -670,13 +668,12 @@ function setupActionBtn(selector, textActive, textInactive) {
   });
 }
 
-// --- LOGIC LOAD DỮ LIỆU PHIM THEO SLUG ---
+// --- LOGIC LOAD DỮ LIỆU PHIM (Đổ vào style cũ Premium) ---
 async function loadMovieFullDetail(slug) {
   const skeleton = document.getElementById('movieSkeleton');
   const contentWrap = document.getElementById('movieContent');
   
   // Ẩn nội dung, hiện skeleton
-  contentWrap.style.display = 'none';
   contentWrap.style.opacity = '0';
   skeleton.style.display = 'block';
 
@@ -701,22 +698,21 @@ async function loadMovieFullDetail(slug) {
     const rawContent = movie.content.replace(/<[^>]+>/g, '') || movie.name;
     metaDesc.content = rawContent.substring(0, 160) + "...";
 
-    // Xử lý ảnh
+    // Ưu tiên dùng backdrop của TMDB nếu API image trả về
     let backdropUrl = `${ophimImageBase}${movie.thumb_url}`;
     if (resImages && resImages.success && resImages.data.images.length > 0) {
       const bd = resImages.data.images.find(img => img.type === 'backdrop');
       if (bd) backdropUrl = `${tmdbImageBase}original${bd.file_path}`;
     }
     
-    // Đổ Backdrop & Poster
-    const heroBackdrop = document.getElementById('heroBackdrop');
-    if(heroBackdrop) heroBackdrop.style.backgroundImage = `url('${backdropUrl}')`;
-    document.getElementById('detailPoster').src = `${ophimImageBase}${movie.poster_url}`;
+    // --- 1. ĐỔ VÀO KHUNG MOVIE-PLAYER ---
+    document.getElementById('playerBg').style.backgroundImage = `url('${backdropUrl}')`;
+    document.getElementById('playerPoster').src = `${ophimImageBase}${movie.poster_url}`;
+    document.getElementById('playerTitle').textContent = movie.name;
+    document.getElementById('playerSubTitle').textContent = movie.origin_name;
+    document.getElementById('playerWatchBtn').href = `/video.html?slug=${movie.slug}`;
 
-    // Đổ Text Info
-    document.getElementById('detailTitle').textContent = movie.name;
-    document.getElementById('detailOriginTitle').textContent = movie.origin_name;
-    
+    // --- 2. ĐỔ VÀO KHUNG MOVIE-DETAIL-SECTION ---
     document.getElementById('detailMeta').innerHTML = `
       <span class="meta-tag highlight">${movie.quality || 'HD'}</span>
       <span class="meta-tag highlight">${movie.episode_current || 'Full'}</span>
@@ -730,113 +726,93 @@ async function loadMovieFullDetail(slug) {
     if (movie.tmdb && movie.tmdb.vote_average) scoreHTML += `<div class="score-box"><i class="fa-solid fa-star"></i> ${movie.tmdb.vote_average}</div>`;
     document.getElementById('detailScores').innerHTML = scoreHTML;
 
-    // Nút xem phim
-    const watchBtn = document.getElementById('watchBtn');
-    if (watchBtn) watchBtn.href = `/video.html?slug=${movie.slug}`;
-
-    // Nội dung
     document.getElementById('detailDesc').innerHTML = movie.content || "Đang cập nhật nội dung...";
 
-    // Đổ Diễn Viên
     const castContainer = document.getElementById('detailCast');
     if (resPeoples && resPeoples.success && resPeoples.data.peoples.length > 0) {
       castContainer.innerHTML = resPeoples.data.peoples.map(person => {
         const avatar = person.profile_path ? `${tmdbImageBase}w185${person.profile_path}` : 'https://via.placeholder.com/150x150/1a2332/9aa4b2?text=No+Image';
-        return `
-          <div class="cast-item">
-            <img src="${avatar}" alt="${person.name}" class="cast-img" loading="lazy">
-            <div class="cast-name" title="${person.name}">${person.name}</div>
-            <div class="cast-char" title="${person.character}">${person.character || 'Diễn viên'}</div>
-          </div>
-        `;
+        return `<div class="cast-item"><img src="${avatar}" alt="${person.name}" class="cast-img" loading="lazy"><div class="cast-name" title="${person.name}">${person.name}</div><div class="cast-char" title="${person.character}">${person.character || 'Diễn viên'}</div></div>`;
       }).join('');
     } else {
       castContainer.innerHTML = `<span style="color:var(--muted); font-size: 13px;">Đang cập nhật...</span>`;
     }
 
-    // Đổ Từ Khóa
     const kwContainer = document.getElementById('detailKeywords');
     if (resKeywords && resKeywords.success && resKeywords.data.keywords.length > 0) {
-      kwContainer.innerHTML = resKeywords.data.keywords.map(kw => `
-        <a href="/tim-kiem?keyword=${encodeURIComponent(kw.name_vn || kw.name)}" class="kw-item">#${kw.name_vn || kw.name}</a>
-      `).join('');
+      kwContainer.innerHTML = resKeywords.data.keywords.map(kw => `<a href="/tim-kiem?keyword=${encodeURIComponent(kw.name_vn || kw.name)}" class="kw-item">#${kw.name_vn || kw.name}</a>`).join('');
     } else {
       kwContainer.innerHTML = `<span style="color:var(--muted); font-size: 13px;">Đang cập nhật...</span>`;
     }
 
-    // Hoàn tất load
+    // 3. Tắt Skeleton, Hiện Content 
     skeleton.style.display = 'none';
-    contentWrap.style.display = 'block';
-    setTimeout(() => { contentWrap.style.opacity = '1'; }, 50);
+    contentWrap.style.opacity = '1';
 
   } catch (error) {
     console.error(error);
-    alert('Có lỗi xảy ra hoặc không tìm thấy phim! Đang đưa bạn về trang chủ...');
-    window.location.href = '/';
+    alert('Không tìm thấy phim!');
   }
 }
 
-// --- DOM READY (CHẠY KHI LOAD TRANG) ---
+// --- DOM READY ---
 document.addEventListener('DOMContentLoaded', () => {
-  const yr = document.getElementById('yr');
-  const yr_footer = document.getElementById('yr_footer');
-  const currentYear = new Date().getFullYear();
-  if(yr) yr.textContent = currentYear;
-  if(yr_footer) yr_footer.textContent = currentYear;
+    const yr = document.getElementById('yr');
+    const yr_footer = document.getElementById('yr_footer');
+    if(yr) yr.textContent = new Date().getFullYear();
+    if(yr_footer) yr_footer.textContent = new Date().getFullYear();
 
-  initDropdowns();
-  setupActionBtn('.action-btn.like', 'Đã Yêu Thích', 'Yêu Thích');
-  setupActionBtn('.action-btn.bookmark', 'Đã Thêm Vào', 'Thêm Vào');
+    setFrame(0);
+    initDropdowns();
 
-  // Xử lý Menu & Search Hamburger
-  if(hamburger) hamburger.onclick = () => sideMenu.classList.contains('open') ? closeMenu() : openMenu();
-  if(overlay) overlay.onclick = () => { closeMenu(); closeSearch(); };
-  if(searchBtn) searchBtn.onclick = () => searchWrap.classList.contains('open') ? closeSearch() : openSearch();
+    setupActionBtn('.action-btn.like', 'Đã Yêu Thích', 'Yêu Thích');
+    setupActionBtn('.action-btn.bookmark', 'Đã Thêm Vào', 'Thêm Vào');
 
-  // Search input logic (Popup live search)
-  if(searchInput) {
-      searchInput.oninput = (e) => {
-          const keyword = e.target.value.trim(); clearTimeout(debounceTimer);
-          if (keyword.length < 2) { searchResults?.classList.remove('show'); return; }
-          debounceTimer = setTimeout(() => {
-              // Hiển thị skeleton nội bộ search
-              if(searchResults) {
-                searchResults.innerHTML = Array(3).fill(0).map(() => `<div class="search-item-result"><div class="skeleton sk-img"></div><div class="search-item-info" style="width: 100%"><div class="skeleton sk-text"></div><div style="display:flex; gap:5px"><div class="skeleton sk-tag"></div><div class="skeleton sk-tag"></div></div></div></div>`).join('');
-                searchResults.classList.add('show');
-              }
-              
-              fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}`).then(res => res.json()).then(data => {
-                  if (data.status === "success" && data.data.items.length > 0) {
-                      searchResults.innerHTML = data.data.items.slice(0, 4).map(item => `
-                          <a href="/phim/?slug=${item.slug}" class="search-item-result">
-                              <img src="${ophimImageBase}${item.thumb_url}" alt="${item.name}">
-                              <div class="search-item-info">
-                                  <div class="search-item-name">${item.name}</div>
-                                  <div class="search-item-tags"><span class="search-item-tag highlight">${item.episode_current}</span><span class="search-item-tag">${item.quality}</span></div>
-                              </div>
-                          </a>`).join('') + `<a href="/tim-kiem?keyword=${encodeURIComponent(keyword)}" class="search-view-all" style="display:block; text-align:center; padding:10px; font-size:12px; color:var(--accent); text-decoration:none; background:rgba(255,107,107,0.05); border-top:1px solid rgba(255,255,255,0.05);">Xem tất cả <i class="fa-solid fa-chevron-right" style="font-size:10px; margin-left:4px;"></i></a>`;
-                  } else {
-                      searchResults.innerHTML = '<div style="padding:15px; font-size:12px; color:var(--muted); text-align:center;">Không tìm thấy phim...</div>';
-                  }
-              });
-          }, 300);
-      };
-      searchInput.onkeydown = e => { if(e.key === 'Enter' && searchInput.value.trim()) window.location.href = `/tim-kiem?keyword=${encodeURIComponent(searchInput.value.trim())}`; };
-  }
+    if(hamburger) hamburger.onclick = () => sideMenu.classList.contains('open') ? closeMenu() : openMenu();
+    if(overlay) overlay.onclick = () => { closeMenu(); closeSearch(); };
+    if(searchBtn) searchBtn.onclick = () => searchWrap.classList.contains('open') ? closeSearch() : openSearch();
 
-  // LẤY SLUG TỪ URL (?slug=ten-phim) ĐỂ GỌI DATA
-  const urlParams = new URLSearchParams(window.location.search);
-  const slug = urlParams.get('slug');
+    // Tìm kiếm
+    if(searchInput) {
+        searchInput.oninput = (e) => {
+            const keyword = e.target.value.trim(); clearTimeout(debounceTimer);
+            if (keyword.length < 2) { searchResults?.classList.remove('show'); return; }
+            debounceTimer = setTimeout(() => {
+                showSearchSkeletons();
+                fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}`).then(res => res.json()).then(data => {
+                    if (data.status === "success" && data.data.items.length > 0) {
+                        searchResults.innerHTML = data.data.items.slice(0, 4).map(item => `
+                            <a href="/phim/?slug=${item.slug}" class="search-item-result">
+                                <img src="${cdnImage}${item.thumb_url}" alt="${item.name}">
+                                <div class="search-item-info">
+                                    <div class="search-item-name">${item.name}</div>
+                                    <div class="search-item-tags"><span class="search-item-tag highlight">${item.episode_current}</span><span class="search-item-tag">${item.quality}</span></div>
+                                </div>
+                            </a>`).join('') + `<a href="/tim-kiem?keyword=${encodeURIComponent(keyword)}" class="search-view-all" style="display:block; text-align:center; padding:10px; font-size:12px; color:var(--accent); text-decoration:none; background:rgba(255,107,107,0.05); border-top:1px solid rgba(255,255,255,0.05);">Xem tất cả <i class="fa-solid fa-chevron-right" style="font-size:10px; margin-left:4px;"></i></a>`;
+                    } else {
+                        searchResults.innerHTML = '<div style="padding:15px; font-size:12px; color:var(--muted); text-align:center;">Không tìm thấy phim...</div>';
+                    }
+                });
+            }, 300);
+        };
+        searchInput.onkeydown = e => { if(e.key === 'Enter' && searchInput.value.trim()) window.location.href = `/tim-kiem?keyword=${encodeURIComponent(searchInput.value.trim())}`; };
+    }
 
-  if (slug) {
-    loadMovieFullDetail(slug);
-  } else {
-    // Không có slug thì đá về trang chủ
-    window.location.href = '/';
-  }
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') { closeMenu(); closeSearch(); } });
+
+    // LẤY DỮ LIỆU TỪ ?slug=
+    const urlParams = new URLSearchParams(window.location.search);
+    const slug = urlParams.get('slug');
+    if (slug) {
+      loadMovieFullDetail(slug);
+    } else {
+      // Chạy demo cứng nếu không có slug
+      document.getElementById('movieSkeleton').style.display = 'none';
+      document.getElementById('movieContent').style.opacity = '1';
+    }
 });
 
-// Các logic animation menu giữ nguyên
+// Các hàm animation cho Menu và Search
 function setFrame(step) {
   if(!iconContainer) return;
   for (let i = 0; i <= totalFrames; i++) iconContainer.classList.remove(`icon-frame_${i.toString().padStart(2, '0')}`);
@@ -887,6 +863,14 @@ function closeSearch(){
   searchWrap.classList.remove('open'); searchResults?.classList.remove('show'); animateSearchIcon(false);
   setTimeout(()=>{ searchAnimIcon?.classList.remove('show'); if(searchIcon) { searchIcon.style.opacity = '1'; searchIcon.style.transform = 'scale(1)'; } }, 180);
   brand?.classList.remove('hide'); if(searchInput) searchInput.value = '';
+}
+function showSearchSkeletons() {
+    if(!searchResults) return;
+    searchResults.innerHTML = Array(3).fill(0).map(() => `
+        <div class="search-item-result"><div class="skeleton sk-img"></div>
+        <div class="search-item-info" style="width: 100%"><div class="skeleton sk-text"></div>
+        <div style="display:flex; gap:5px"><div class="skeleton sk-tag"></div><div class="skeleton sk-tag"></div></div></div></div>`).join('');
+    searchResults.classList.add('show');
 }
 </script>
 
