@@ -684,126 +684,13 @@
   </footer>
 
 <script>
-// Cấu hình URL hệ thống ảnh
-const ophimImageBase = "https://img.ophim.live/uploads/movies/";
-const tmdbImageBase = "https://image.tmdb.org/t/p/";
-
-// Hàm Mở/Đóng Giao diện
-function closeMovieDetail() {
-  document.getElementById('movieDetailSection').style.display = 'none';
-  document.body.style.overflow = ''; // Trả lại thanh cuộn cho web
-}
-
-// Hàm Fetch toàn bộ Data bằng Promise.all
-async function fetchMovieFullDetail(slug) {
-  const detailSection = document.getElementById('movieDetailSection');
-  const skeleton = document.getElementById('movieSkeleton');
-  const contentWrap = document.getElementById('movieContent');
-  
-  // 1. Reset UI & Hiện Skeleton
-  detailSection.style.display = 'block';
-  document.body.style.overflow = 'hidden'; // Khóa cuộn trang nền
-  skeleton.style.display = 'block';
-  contentWrap.style.opacity = '0';
-
-  try {
-    // 2. Fetch 4 API cùng lúc (cực nhanh)
-    const [resInfo, resImages, resPeoples, resKeywords] = await Promise.all([
-      fetch(`https://ophim1.com/v1/api/phim/${slug}`).then(r => r.json()),
-      fetch(`https://ophim1.com/v1/api/phim/${slug}/images`).then(r => r.json()).catch(() => null),
-      fetch(`https://ophim1.com/v1/api/phim/${slug}/peoples`).then(r => r.json()).catch(() => null),
-      fetch(`https://ophim1.com/v1/api/phim/${slug}/keywords`).then(r => r.json()).catch(() => null)
-    ]);
-
-    if (resInfo.status !== "success") throw new Error("Không tìm thấy phim");
-    const movie = resInfo.data.item;
-
-    // --- ĐỔ DỮ LIỆU THÔNG TIN CƠ BẢN ---
-    document.getElementById('detailTitle').textContent = movie.name;
-    document.getElementById('detailOriginTitle').textContent = movie.origin_name;
-    document.getElementById('detailDesc').innerHTML = movie.content || "Đang cập nhật nội dung...";
-    
-    // Xử lý Poster và Backdrop
-    // Ưu tiên dùng backdrop của TMDB nếu API image trả về, nếu không dùng thumb của ophim
-    let backdropUrl = `${ophimImageBase}${movie.thumb_url}`;
-    if (resImages && resImages.success && resImages.data.images.length > 0) {
-      // Tìm backdrop từ mảng images
-      const bd = resImages.data.images.find(img => img.type === 'backdrop');
-      if (bd) backdropUrl = `${tmdbImageBase}original${bd.file_path}`;
-    }
-    
-    document.getElementById('detailBackdrop').style.backgroundImage = `url('${backdropUrl}')`;
-    document.getElementById('detailPoster').src = `${ophimImageBase}${movie.poster_url}`;
-
-    // Render Meta (Tags)
-    document.getElementById('detailMeta').innerHTML = `
-      <span class="meta-tag highlight">${movie.quality}</span>
-      <span class="meta-tag highlight">${movie.episode_current}</span>
-      <span class="meta-tag">${movie.lang}</span>
-      <span class="meta-tag">${movie.year}</span>
-      <span class="meta-tag">${movie.time}</span>
-    `;
-
-    // Render Scores
-    let scoreHTML = '';
-    if (movie.imdb && movie.imdb.vote_average) {
-      scoreHTML += `<div class="score-box"><i class="fa-brands fa-imdb"></i> ${movie.imdb.vote_average}</div>`;
-    }
-    if (movie.tmdb && movie.tmdb.vote_average) {
-      scoreHTML += `<div class="score-box"><i class="fa-solid fa-star"></i> ${movie.tmdb.vote_average}</div>`;
-    }
-    document.getElementById('detailScores').innerHTML = scoreHTML;
-
-    // --- ĐỔ DỮ LIỆU DIỄN VIÊN ---
-    const castContainer = document.getElementById('detailCast');
-    if (resPeoples && resPeoples.success && resPeoples.data.peoples.length > 0) {
-      castContainer.innerHTML = resPeoples.data.peoples.map(person => {
-        const avatar = person.profile_path 
-          ? `${tmdbImageBase}w185${person.profile_path}` 
-          : 'https://via.placeholder.com/150x150/1a2332/9aa4b2?text=No+Image'; // Ảnh mặc định
-        return `
-          <div class="cast-item">
-            <img src="${avatar}" alt="${person.name}" class="cast-img" loading="lazy">
-            <div class="cast-name" title="${person.name}">${person.name}</div>
-            <div class="cast-char" title="${person.character}">${person.character || 'Diễn viên'}</div>
-          </div>
-        `;
-      }).join('');
-    } else {
-      castContainer.innerHTML = `<span style="color:var(--muted); font-size: 13px;">Đang cập nhật...</span>`;
-    }
-
-    // --- ĐỔ DỮ LIỆU TỪ KHÓA ---
-    const kwContainer = document.getElementById('detailKeywords');
-    if (resKeywords && resKeywords.success && resKeywords.data.keywords.length > 0) {
-      kwContainer.innerHTML = resKeywords.data.keywords.map(kw => `
-        <a href="/tim-kiem?keyword=${encodeURIComponent(kw.name_vn || kw.name)}" class="kw-item">
-          #${kw.name_vn || kw.name}
-        </a>
-      `).join('');
-    } else {
-      kwContainer.innerHTML = `<span style="color:var(--muted); font-size: 13px;">Đang cập nhật...</span>`;
-    }
-
-    // 3. Ẩn Skeleton, Hiện Content (Hiệu ứng fade-in mượt)
-    setTimeout(() => {
-      skeleton.style.display = 'none';
-      contentWrap.style.opacity = '1';
-    }, 400); // Thêm delay nhỏ để ảnh kịp load nhìn mượt hơn
-
-  } catch (error) {
-    console.error(error);
-    alert('Có lỗi xảy ra hoặc không tìm thấy phim!');
-    closeMovieDetail();
-  }
-}
-
-// --- DATA GỌN NHẸ ---
+// --- DATA GỌN NHẸ CHO MENU ---
 const khuVucData = { data: { items: [ ["Trung Quốc","trung-quoc"], ["Hàn Quốc","han-quoc"], ["Nhật Bản","nhat-ban"], ["Thái Lan","thai-lan"], ["Âu Mỹ","au-my"], ["Đài Loan","dai-loan"], ["Hồng Kông","hong-kong"], ["Ấn Độ","an-do"], ["Anh","anh"], ["Pháp","phap"], ["Canada","canada"], ["Quốc Gia Khác","quoc-gia-khac"], ["Đức","duc"], ["Tây Ban Nha","tay-ban-nha"], ["Thổ Nhĩ Kỳ","tho-nhi-ky"], ["Hà Lan","ha-lan"], ["Indonesia","indonesia"], ["Nga","nga"], ["Mexico","mexico"], ["Ba lan","ba-lan"], ["Úc","uc"], ["Thụy Điển","thuy-dien"], ["Malaysia","malaysia"], ["Brazil","brazil"], ["Philippines","philippines"], ["Bồ Đào Nha","bo-dao-nha"], ["Ý","y"], ["Đan Mạch","dan-mach"], ["UAE","uae"], ["Na Uy","na-uy"], ["Thụy Sĩ","thuy-si"], ["Châu Phi","chau-phi"], ["Nam Phi","nam-phi"], ["Ukraina","ukraina"], ["Ả Rập Xê Út","a-rap-xe-ut"], ["Bỉ","bi"], ["Ireland","ireland"], ["Colombia","colombia"], ["Phần Lan","phan-lan"], ["Việt Nam","viet-nam"], ["Chile","chile"], ["Hy Lạp","hy-lap"], ["Nigeria","nigeria"], ["Argentina","argentina"], ["Singapore","singapore"] ].map(([name, slug]) => ({ name, slug })) }};
 const theLoaiData = { data: { items: [ ["Hành Động","hanh-dong"], ["Tình Cảm","tinh-cam"], ["Hài Hước","hai-huoc"], ["Cổ Trang","co-trang"], ["Tâm Lý","tam-ly"], ["Hình Sự","hinh-su"], ["Chiến Tranh","chien-tranh"], ["Thể Thao","the-thao"], ["Võ Thuật","vo-thuat"], ["Viễn Tưởng","vien-tuong"], ["Phiêu Lưu","phieu-luu"], ["Khoa Học","khoa-hoc"], ["Kinh Di","kinh-di"], ["Âm Nhạc","am-nhac"], ["Thần Thoại","than-thoai"], ["Tài Liệu","tai-lieu"], ["Gia Đình","gia-dinh"], ["Chính kịch","chinh-kich"], ["Bí ẩn","bi-an"], ["Học Đường","hoc-duong"], ["Kinh Điển","kinh-dien"], ["Phim 18+","phim-18"], ["Short Drama","short-drama"] ].map(([name, slug]) => ({ name, slug })) }};
 
 // --- BIẾN TOÀN CỤC ---
-const cdnImage = "https://img.ophim.live/uploads/movies/";
+const ophimImageBase = "https://img.ophim.live/uploads/movies/";
+const tmdbImageBase = "https://image.tmdb.org/t/p/";
 const totalFrames = 21;
 let animationId = null;
 let searchAnimationId = null;
@@ -821,20 +708,17 @@ const brand = document.querySelector('.brand');
 const searchIcon = searchBtn ? searchBtn.querySelector('i') : null;
 const iconContainer = hamburger ? hamburger.querySelector('.hamburger-icon') : null;
 
-// --- MENU DROPDOWNS ---
+// --- KHỞI TẠO MENU & UI ---
 function initDropdowns() {
   const configs = [
     { triggerId: 'dropKhuVuc', containerId: 'listKhuVuc', data: khuVucData.data.items, path: 'quoc-gia' },
     { triggerId: 'dropTheLoai', containerId: 'listTheLoai', data: theLoaiData.data.items, path: 'the-loai' }
   ];
-
   configs.forEach(conf => {
     const container = document.getElementById(conf.containerId);
     const trigger = document.getElementById(conf.triggerId);
     if (!container || !trigger) return;
-
     container.innerHTML = conf.data.map(item => `<a href="/${conf.path}/${item.slug}">${item.name}</a>`).join('');
-
     trigger.addEventListener('click', (e) => {
       e.preventDefault(); e.stopPropagation();
       document.querySelectorAll('.dropdown-content').forEach(el => { if(el.id !== conf.containerId) el.classList.remove('show'); });
@@ -844,7 +728,6 @@ function initDropdowns() {
       if (isOpen) setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 300);
     });
   });
-
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.menu-item-dropdown')) {
       document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('show'));
@@ -853,13 +736,195 @@ function initDropdowns() {
   });
 }
 
-// --- MENU & SEARCH ANIMATIONS ---
+function setupActionBtn(selector, textActive, textInactive) {
+  document.querySelectorAll(selector).forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.add('changing');
+      setTimeout(() => {
+        btn.classList.toggle('active');
+        const icon = btn.querySelector('i');
+        const text = btn.querySelector('span');
+        if(btn.classList.contains('active')){
+          icon.classList.replace('fa-regular', 'fa-solid'); text.textContent = textActive;
+        } else {
+          icon.classList.replace('fa-solid', 'fa-regular'); text.textContent = textInactive;
+        }
+        btn.classList.remove('changing');
+      }, 150);
+    });
+  });
+}
+
+// --- LOGIC LOAD DỮ LIỆU PHIM THEO SLUG ---
+async function loadMovieFullDetail(slug) {
+  const detailSection = document.getElementById('movieDetailSection');
+  const skeleton = document.getElementById('movieSkeleton');
+  const contentWrap = document.getElementById('movieContent');
+  
+  // Hiển thị phần chi tiết dưới dạng khối nội dung (không phải popup)
+  if (detailSection) {
+    detailSection.style.display = 'block';
+    detailSection.style.position = 'relative'; // Xóa fixed overlay
+    detailSection.style.zIndex = '1';
+    
+    // Ẩn các thành phần thừa (nút X, poster nhỏ, backdrop của detail)
+    const btnClose = detailSection.querySelector('.btn-close-detail');
+    if (btnClose) btnClose.style.display = 'none';
+    const detailLeft = detailSection.querySelector('.detail-left');
+    if (detailLeft) detailLeft.style.display = 'none';
+    const detailBackdrop = document.getElementById('detailBackdrop');
+    if (detailBackdrop) detailBackdrop.style.display = 'none';
+  }
+
+  // Ẩn trước nội dung, hiện khung skeleton
+  contentWrap.style.opacity = '0';
+  skeleton.style.display = 'block';
+
+  try {
+    // Gọi song song 4 API
+    const [resInfo, resImages, resPeoples, resKeywords] = await Promise.all([
+      fetch(`https://ophim1.com/v1/api/phim/${slug}`).then(r => r.json()),
+      fetch(`https://ophim1.com/v1/api/phim/${slug}/images`).then(r => r.json()).catch(() => null),
+      fetch(`https://ophim1.com/v1/api/phim/${slug}/peoples`).then(r => r.json()).catch(() => null),
+      fetch(`https://ophim1.com/v1/api/phim/${slug}/keywords`).then(r => r.json()).catch(() => null)
+    ]);
+
+    if (resInfo.status !== "success") throw new Error("Không tìm thấy phim");
+    const movie = resInfo.data.item;
+
+    // 1. SET META & TITLE
+    document.title = `Sọt Phim — ${movie.name}`;
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = "description";
+      document.head.appendChild(metaDesc);
+    }
+    // Lọc bỏ thẻ HTML trong nội dung để làm meta description
+    const rawContent = movie.content.replace(/<[^>]+>/g, '') || movie.name;
+    metaDesc.content = rawContent.substring(0, 160) + "...";
+
+    // Lấy ảnh nét nhất từ TMDB nếu có
+    let backdropUrl = `${ophimImageBase}${movie.thumb_url}`;
+    if (resImages && resImages.success && resImages.data.images.length > 0) {
+      const bd = resImages.data.images.find(img => img.type === 'backdrop');
+      if (bd) backdropUrl = `${tmdbImageBase}original${bd.file_path}`;
+    }
+    const posterUrl = `${ophimImageBase}${movie.poster_url}`;
+
+    // 2. ĐỔ DATA VÀO KHUNG PLAYER (Hero Section)
+    const playerBg = document.querySelector('.player-bg');
+    const playerPoster = document.querySelector('.poster-wrapper img');
+    const playerTitle = document.querySelector('.movie-title h1');
+    const playerSubTitle = document.querySelector('.movie-title .sub-title');
+    const watchBtn = document.querySelector('.watch-btn');
+
+    if (playerBg) playerBg.style.backgroundImage = `url('${backdropUrl}')`;
+    if (playerPoster) playerPoster.src = posterUrl;
+    if (playerTitle) playerTitle.textContent = movie.name;
+    if (playerSubTitle) playerSubTitle.textContent = movie.origin_name;
+    
+    // Set link nút xem phim (Giả sử bạn có trang xem phim dạng video.html?slug=...)
+    if (watchBtn) watchBtn.href = `/video.html?slug=${movie.slug}`;
+
+    // 3. ĐỔ DATA VÀO KHUNG CHI TIẾT
+    document.getElementById('detailTitle').textContent = movie.name;
+    document.getElementById('detailOriginTitle').textContent = movie.origin_name;
+    document.getElementById('detailDesc').innerHTML = movie.content || "Đang cập nhật nội dung...";
+    
+    document.getElementById('detailMeta').innerHTML = `
+      <span class="meta-tag highlight">${movie.quality || 'HD'}</span>
+      <span class="meta-tag highlight">${movie.episode_current || 'Full'}</span>
+      <span class="meta-tag">${movie.lang || 'Vietsub'}</span>
+      <span class="meta-tag">${movie.year || 'N/A'}</span>
+      <span class="meta-tag">${movie.time || 'N/A'}</span>
+    `;
+
+    let scoreHTML = '';
+    if (movie.imdb && movie.imdb.vote_average) {
+      scoreHTML += `<div class="score-box"><i class="fa-brands fa-imdb"></i> ${movie.imdb.vote_average}</div>`;
+    }
+    if (movie.tmdb && movie.tmdb.vote_average) {
+      scoreHTML += `<div class="score-box"><i class="fa-solid fa-star" style="color:#01b4e4"></i> ${movie.tmdb.vote_average}</div>`;
+    }
+    document.getElementById('detailScores').innerHTML = scoreHTML;
+
+    // Đổ Diễn Viên
+    const castContainer = document.getElementById('detailCast');
+    if (resPeoples && resPeoples.success && resPeoples.data.peoples.length > 0) {
+      castContainer.innerHTML = resPeoples.data.peoples.map(person => {
+        const avatar = person.profile_path ? `${tmdbImageBase}w185${person.profile_path}` : 'https://via.placeholder.com/150x150/1a2332/9aa4b2?text=No+Image';
+        return `
+          <div class="cast-item">
+            <img src="${avatar}" alt="${person.name}" class="cast-img" loading="lazy">
+            <div class="cast-name" title="${person.name}">${person.name}</div>
+            <div class="cast-char" title="${person.character}">${person.character || 'Diễn viên'}</div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      castContainer.innerHTML = `<span style="color:var(--muted); font-size: 13px;">Đang cập nhật...</span>`;
+    }
+
+    // Đổ Từ Khóa
+    const kwContainer = document.getElementById('detailKeywords');
+    if (resKeywords && resKeywords.success && resKeywords.data.keywords.length > 0) {
+      kwContainer.innerHTML = resKeywords.data.keywords.map(kw => `
+        <a href="/tim-kiem?keyword=${encodeURIComponent(kw.name_vn || kw.name)}" class="kw-item">
+          #${kw.name_vn || kw.name}
+        </a>
+      `).join('');
+    } else {
+      kwContainer.innerHTML = `<span style="color:var(--muted); font-size: 13px;">Đang cập nhật...</span>`;
+    }
+
+    // Tắt Skeleton, Hiện nội dung với hiệu ứng mượt
+    setTimeout(() => {
+      skeleton.style.display = 'none';
+      contentWrap.style.opacity = '1';
+    }, 400);
+
+  } catch (error) {
+    console.error(error);
+    alert('Có lỗi xảy ra hoặc không tìm thấy phim! Đang đưa bạn về trang chủ...');
+    window.location.href = '/';
+  }
+}
+
+
+// --- DOM READY (CHẠY KHI LOAD TRANG) ---
+document.addEventListener('DOMContentLoaded', () => {
+  const yr = document.getElementById('yr');
+  if(yr) yr.textContent = new Date().getFullYear();
+
+  initDropdowns();
+  setupActionBtn('.action-btn.like', 'Đã Yêu Thích', 'Yêu Thích');
+  setupActionBtn('.action-btn.bookmark', 'Đã Thêm Vào', 'Thêm Vào');
+
+  // Xử lý Menu & Search Hamburger
+  if(hamburger) hamburger.onclick = () => sideMenu.classList.contains('open') ? closeMenu() : openMenu();
+  if(overlay) overlay.onclick = () => { closeMenu(); closeSearch(); };
+  if(searchBtn) searchBtn.onclick = () => searchWrap.classList.contains('open') ? closeSearch() : openSearch();
+
+  // 1. LẤY SLUG TỪ URL (Cách 2: ?slug=ten-phim)
+  const urlParams = new URLSearchParams(window.location.search);
+  const slug = urlParams.get('slug');
+
+  if (slug) {
+    // Nếu có slug -> Gọi API đổ dữ liệu
+    loadMovieFullDetail(slug);
+  } else {
+    // Nếu ai đó vào trang /phim/ mà không có ?slug=... -> Đá về trang chủ
+    window.location.href = '/';
+  }
+});
+
+// Các logic animation menu giữ nguyên...
 function setFrame(step) {
   if(!iconContainer) return;
   for (let i = 0; i <= totalFrames; i++) iconContainer.classList.remove(`icon-frame_${i.toString().padStart(2, '0')}`);
   iconContainer.classList.add(`icon-frame_${step.toString().padStart(2, '0')}`);
 }
-
 function animateHamburger(isOpening) {
   if (animationId) cancelAnimationFrame(animationId);
   const start = isOpening ? 0 : totalFrames; const end = isOpening ? totalFrames : 0;
@@ -873,7 +938,6 @@ function animateHamburger(isOpening) {
   }
   animationId = requestAnimationFrame(step);
 }
-
 function openMenu(){ sideMenu.classList.add('open'); overlay.classList.add('show'); animateHamburger(true); }
 function closeMenu(){ sideMenu.classList.remove('open'); overlay.classList.remove('show'); animateHamburger(false); }
 
@@ -882,7 +946,6 @@ function setSearchFrame(step) {
   for (let i = 0; i <= totalFrames; i++) searchAnimIcon.classList.remove(`icon-frame_${i.toString().padStart(2,'0')}`);
   searchAnimIcon.classList.add(`icon-frame_${step.toString().padStart(2,'0')}`);
 }
-
 function animateSearchIcon(opening) {
   if (searchAnimationId) cancelAnimationFrame(searchAnimationId);
   const start = opening ? 2 : 21; const end = opening ? 21 : 2;
@@ -896,101 +959,20 @@ function animateSearchIcon(opening) {
   }
   searchAnimationId = requestAnimationFrame(step);
 }
-
 function openSearch(){
   searchWrap.classList.add('open'); brand?.classList.add('hide');
   if(searchIcon) { searchIcon.style.opacity = '0'; searchIcon.style.transform = 'scale(.8)'; }
   searchAnimIcon?.classList.add('show'); setSearchFrame(2); animateSearchIcon(true);
   setTimeout(()=>searchInput?.focus(), 100);
 }
-
 function closeSearch(){
   if(!searchWrap?.classList.contains('open')) return;
   searchWrap.classList.remove('open'); searchResults?.classList.remove('show'); animateSearchIcon(false);
   setTimeout(()=>{ searchAnimIcon?.classList.remove('show'); if(searchIcon) { searchIcon.style.opacity = '1'; searchIcon.style.transform = 'scale(1)'; } }, 180);
   brand?.classList.remove('hide'); if(searchInput) searchInput.value = '';
 }
-
-function showSearchSkeletons() {
-    if(!searchResults) return;
-    searchResults.innerHTML = Array(3).fill(0).map(() => `
-        <div class="search-item-result"><div class="skeleton sk-img"></div>
-        <div class="search-item-info" style="width: 100%"><div class="skeleton sk-text"></div>
-        <div style="display:flex; gap:5px"><div class="skeleton sk-tag"></div><div class="skeleton sk-tag"></div></div></div></div>`).join('');
-    searchResults.classList.add('show');
-}
-
-// --- SETUP ACTION BUTTONS TỐI ƯU ---
-function setupActionBtn(selector, textActive, textInactive) {
-  document.querySelectorAll(selector).forEach(btn => {
-    btn.addEventListener('click', () => {
-      btn.classList.add('changing'); // Chạy hiệu ứng làm mờ chữ
-      
-      setTimeout(() => {
-        btn.classList.toggle('active');
-        const icon = btn.querySelector('i');
-        const text = btn.querySelector('span');
-
-        if(btn.classList.contains('active')){
-          icon.classList.replace('fa-regular', 'fa-solid');
-          text.textContent = textActive;
-        } else {
-          icon.classList.replace('fa-solid', 'fa-regular');
-          text.textContent = textInactive;
-        }
-        
-        btn.classList.remove('changing'); // Hiện chữ lại
-      }, 150);
-    });
-  });
-}
-
-// --- DOM READY ---
-document.addEventListener('DOMContentLoaded', () => {
-    const yr = document.getElementById('yr');
-    if(yr) yr.textContent = new Date().getFullYear();
-
-    setFrame(0);
-    initDropdowns();
-
-    // Gắn sự kiện cho các nút hành động phim
-    setupActionBtn('.action-btn.like', 'Đã Yêu Thích', 'Yêu Thích');
-    setupActionBtn('.action-btn.bookmark', 'Đã Thêm Vào', 'Thêm Vào');
-
-    // Menu & Overlay events
-    if(hamburger) hamburger.onclick = () => sideMenu.classList.contains('open') ? closeMenu() : openMenu();
-    if(overlay) overlay.onclick = () => { closeMenu(); closeSearch(); };
-    if(searchBtn) searchBtn.onclick = () => searchWrap.classList.contains('open') ? closeSearch() : openSearch();
-
-    // Search events
-    if(searchInput) {
-        searchInput.oninput = (e) => {
-            const keyword = e.target.value.trim(); clearTimeout(debounceTimer);
-            if (keyword.length < 2) { searchResults?.classList.remove('show'); return; }
-            debounceTimer = setTimeout(() => {
-                showSearchSkeletons();
-                fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}`).then(res => res.json()).then(data => {
-                    if (data.status === "success" && data.data.items.length > 0) {
-                        searchResults.innerHTML = data.data.items.slice(0, 4).map(item => `
-                            <a href="/phim/${item.slug}" class="search-item-result">
-                                <img src="${cdnImage}${item.thumb_url}" alt="${item.name}">
-                                <div class="search-item-info">
-                                    <div class="search-item-name">${item.name}</div>
-                                    <div class="search-item-tags"><span class="search-item-tag highlight">${item.episode_current}</span><span class="search-item-tag">${item.quality}</span></div>
-                                </div>
-                            </a>`).join('') + `<a href="/tim-kiem?keyword=${encodeURIComponent(keyword)}" class="search-view-all">Xem tất cả cho '<strong>${keyword}</strong>' <i class="fa-solid fa-chevron-right"></i></a>`;
-                    } else {
-                        searchResults.innerHTML = '<div style="padding:15px; font-size:12px; color:var(--muted); text-align:center;">Không tìm thấy phim...</div>';
-                    }
-                });
-            }, 300);
-        };
-        searchInput.onkeydown = e => { if(e.key === 'Enter' && searchInput.value.trim()) window.location.href = `/tim-kiem?keyword=${encodeURIComponent(searchInput.value.trim())}`; };
-    }
-
-    document.addEventListener('keydown', e => { if(e.key === 'Escape') { closeMenu(); closeSearch(); } });
-});
 </script>
+
 
 </body>
 </html>
