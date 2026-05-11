@@ -884,12 +884,23 @@ const theLoaiData = {
   }
 };
 
-let cdnImage = "https://img.ophim.live/uploads/movies/";
+const FALLBACK_CDN = "https://img.ophim.live/uploads/movies/";
+let cdnImage = FALLBACK_CDN;
 const BASE_API = "https://ophim1.com";
+const PLACEHOLDER_IMG = "https://via.placeholder.com/150x220/0b1220/9aa4b2?text=No+Image";
 const totalFrames = 21;
 let animationId = null;
 let searchAnimationId = null;
 let debounceTimer = null;
+
+// =============================================
+// CORE IMAGE URL HELPER
+// =============================================
+function getImageUrl(path, cdnBase) {
+  if (!path) return PLACEHOLDER_IMG;
+  if (path.startsWith('http')) return path;
+  return `${cdnBase || cdnImage}${path}`;
+}
 
 // Selectors
 const hamburger = document.getElementById('hamburger');
@@ -929,15 +940,15 @@ function getEpisodeBadge(movie) {
 function renderCards(container, movies) {
   if (!container) return;
   container.innerHTML = movies.map(movie => {
-    const imgSrc = movie.thumb_url
-      ? (movie.thumb_url.startsWith('http') ? movie.thumb_url : `${cdnImage}${movie.thumb_url}`)
-      : '';
+    const imgSrc = getImageUrl(movie.thumb_url);
     const badge = getEpisodeBadge(movie);
     return `
       <div class="card-item">
         <a href="phim.html?slug=${movie.slug}" style="text-decoration:none; color:inherit;">
           <div class="card-poster">
-            <img class="poster-img" src="${imgSrc}" alt="${movie.name}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.src='https://via.placeholder.com/150x200/1a2332/9aa4b2?text=No+Image';this.classList.add('loaded')">
+            <img class="poster-img" src="${imgSrc}" alt="${movie.name}" loading="lazy"
+              onload="this.classList.add('loaded')"
+              onerror="this.src='${PLACEHOLDER_IMG}';this.classList.add('loaded')">
             <div class="card-episode">${badge}</div>
           </div>
           <div class="card-title" title="${movie.name}">${movie.name}</div>
@@ -1026,7 +1037,7 @@ async function fetchHeroMovies() {
     const data = await res.json();
 
     if (data.status === 'success' && data.data) {
-      const localCdn = data.data.APP_DOMAIN_CDN_IMAGE || cdnImage;
+      if (data.data.APP_DOMAIN_CDN_IMAGE) cdnImage = data.data.APP_DOMAIN_CDN_IMAGE;
       const items = (data.data.items || []).slice(0, 5);
 
       heroSlider.querySelectorAll('.hero-slide').forEach(s => s.remove());
@@ -1035,9 +1046,7 @@ async function fetchHeroMovies() {
         const slide = document.createElement('a');
         slide.href = `phim.html?slug=${movie.slug}`;
         slide.className = `hero-slide${index === 0 ? ' active' : ''}`;
-        const bg = movie.thumb_url
-          ? (movie.thumb_url.startsWith('http') ? movie.thumb_url : `${localCdn}${movie.thumb_url}`)
-          : '';
+        const bg = getImageUrl(movie.thumb_url);
         slide.style.backgroundImage = `url('${bg}')`;
 
         const cats = Array.isArray(movie.category) ? movie.category.map(c => c.name).slice(0, 2) : [];
@@ -1210,12 +1219,10 @@ function doSearch(keyword) {
       if (!searchResults) return;
       if (data.status === 'success' && data.data.items && data.data.items.length > 0) {
         searchResults.innerHTML = data.data.items.slice(0, 5).map(item => {
-          const img = item.thumb_url
-            ? (item.thumb_url.startsWith('http') ? item.thumb_url : `${cdnImage}${item.thumb_url}`)
-            : '';
+          const img = getImageUrl(item.thumb_url);
           return `
             <a href="phim.html?slug=${item.slug}" class="search-item-result">
-              <img src="${img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50x70/1a2332/9aa4b2?text=?'">
+              <img src="${img}" alt="${item.name}" onerror="this.src='${PLACEHOLDER_IMG}'">
               <div class="search-item-info">
                 <div class="search-item-name">${item.name}</div>
                 <div class="search-item-tags">
