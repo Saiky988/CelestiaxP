@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sọt Phim — Demo</title>
+  <title>Sọt Phim — Xem Phim Online Miễn Phí</title>
+  <meta name="description" content="Sọt Phim - Xem phim online miễn phí Full HD Vietsub, thuyết minh, lồng tiếng. Kho phim khổng lồ từ nhiều quốc gia.">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-<link href="https://cdn.iconly.io/kits/LDCcQuH30jiB/v_b62f48f/iconly.min.css" rel="stylesheet" integrity="sha384-ArSV7IIJaD+QIRXk8AzPsnBWwGuPAlzy4eoPlAfhlKsRN8lXjKETYumrJxEh54Rl" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://cdn.iconly.io/kits/LDCcQuH30jiB/v_b62f48f/iconly.min.css" rel="stylesheet" integrity="sha384-ArSV7IIJaD+QIRXk8AzPsnBWwGuPAlzy4eoPlAfhlKsRN8lXjKETYumrJxEh54Rl" crossorigin="anonymous"/>
 
 <style>
   /* =========================================
@@ -294,7 +294,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    overflow-y: auto; 
+    overflow-y: auto;
     scrollbar-width: none;
   }
 
@@ -461,11 +461,11 @@
   }
   .hero-tag.lang {
     background: rgba(0, 180, 100, 0.45); color: #ccffdd;
-    border-color: rgba(0, 255, 140, 0.4); overflow: hidden;
+    border-color: rgba(0, 255, 140, 0.4);
   }
   .hero-tag.quality, .hero-tag.movie {
     background: rgba(20, 20, 35, 0.55); color: #f0f0ff;
-    border-color: rgba(255, 255, 255, 0.12); overflow: hidden;
+    border-color: rgba(255, 255, 255, 0.12); overflow: hidden; position: relative;
   }
   .hero-tag.quality::after, .hero-tag.movie::after {
     content: ""; position: absolute; top: 0; left: -150%; width: 100%; height: 100%;
@@ -482,7 +482,7 @@
     pointer-events: none;
   }
   .hero-content h2 { margin: 0 0 8px; font-size: 15px; }
-  .hero-meta { margin: 0 0 0; font-size: 11px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+  .hero-meta { margin: 0; font-size: 11px; color: var(--muted); display: flex; gap: 6px; align-items: center; }
   .hero-separator { opacity: .6; }
 
   /* =========================================
@@ -544,7 +544,6 @@
   .cards-wrapper::-webkit-scrollbar { display: none; }
 
   .card-item { flex: 0 0 100px; scroll-snap-align: start; display: flex; flex-direction: column; gap: 6px; transition: transform 0.18s ease; }
-  .card-item-vd { flex: 0 0 160px; scroll-snap-align: start; display: flex; flex-direction: column; gap: 6px; transition: transform 0.18s ease; min-height: 120px; }
 
   @media (min-width: 600px) {
     .card-item { flex: 0 0 180px; }
@@ -559,25 +558,18 @@
     position: relative; width: 100%; aspect-ratio: 3 / 4; border-radius: 12px;
     overflow: hidden; background-size: cover; background-position: center;
     background-color: var(--card); border: 1px solid rgba(255,255,255,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  .card-poster-vd {
-    position: relative; width: 100%; aspect-ratio: 16 / 9; background-color: #1a2332;
-    overflow: hidden; border-radius: 12px; display: flex; align-items: center;
-    justify-content: center; contain: paint; 
+  .card-item:hover .card-poster {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
   }
-  .card-poster-vd .bg-blur {
-    position: absolute; inset: 0; background-size: cover; background-position: center;
-    filter: blur(15px) brightness(0.6); transform: scale(1.1); z-index: 0;
+
+  .card-poster img.poster-img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out;
   }
-  .card-poster-vd img.poster-main {
-    position: relative; z-index: 1; height: 100%; width: auto;
-    object-fit: contain; transition: all 0.3s ease;
-  }
-  .card-poster-vd img.poster-main.is-landscape { width: 100%; height: 100%; object-fit: cover; }
-  .card-poster-vd.has-landscape .bg-blur { display: none; }
-  
-  .poster-main { opacity: 0; transition: opacity 0.5s ease-in-out; }
-  .poster-main.loaded { opacity: 1; }
+  .card-poster img.poster-img.loaded { opacity: 1; }
 
   .card-episode {
     position: absolute; bottom: 5px; left: 5px; background: rgba(20, 20, 35, 0.45);
@@ -608,9 +600,6 @@
     animation: shimmer 1.5s infinite;
   }
   .card-item.is-loading .card-episode { display: none; }
-  .card-item-vd.is-loading .card-poster-vd::before { content: ""; position: absolute; inset: 0; background: #1a2332; z-index: 2; }
-  .card-item-vd.is-loading .card-poster-vd { background-color: #1a2332; border: none; }
-  .card-item-vd.is-loading .card-title { height: 14px; width: 80%; background: #1a2332; margin-top: 10px; border-radius: 4px; }
 
   .skeleton { background: #1a2332; position: relative; overflow: hidden; border-radius: 4px; }
   .skeleton::after {
@@ -702,229 +691,183 @@
   .footer-icon i { text-decoration: none !important; }
   .footer-desc { max-width: 1000px; line-height: 1.6; margin-bottom: 25px; font-size: 11px; opacity: .8; }
   .footer-bottom { border-top: 1px solid rgba(255,255,255,.05); padding-top: 15px; font-size: 12px; opacity: .6; }
-</style>
 
+  /* Section header */
+  .section-header {
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .section-header h2 { margin: 0; font-size: 18px; font-weight: 600; }
+  .section-header a { color: var(--accent); text-decoration: none; font-size: 13px; }
+</style>
 </head>
 <body>
 
   <header class="app-header" role="banner">
     <div class="header-left">
       <button class="hamburger-btn" id="hamburger" aria-label="menu">
-        <span class="hamburger-icon icon"
-          data-step="1"
-          style="font-size:18px;color:var(--text);display:inline-block;transition:font-size 0.1s ease;">
-        </span>
+        <span class="hamburger-icon icon" data-step="1" style="font-size:18px;color:var(--text);display:inline-block;transition:font-size 0.1s ease;"></span>
       </button>
-    <a class="brand" href="#">
-      <img src="https://raw.githubusercontent.com/Ebeexah/GioPhim/refs/heads/main/iimg/SotPhim.v1.png" alt="PhimMenu Logo">
-    </a>
+      <a class="brand" href="main.html">
+        <img src="https://raw.githubusercontent.com/Ebeexah/GioPhim/refs/heads/main/iimg/SotPhim.v1.png" alt="SotPhim Logo">
+      </a>
     </div>
 
-    <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-    </div>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;"></div>
 
     <div class="header-right">
-    <div class="search-input" id="searchWrap" aria-hidden="true">
+      <div class="search-input" id="searchWrap" aria-hidden="true">
         <input id="searchInput" type="search" placeholder="Tìm phim, diễn viên..." autocomplete="off" />
-    </div>
-    <div id="searchResults" class="search-results-popup"></div>
+      </div>
+      <div id="searchResults" class="search-results-popup"></div>
       <button class="icon-btn" id="searchBtn" aria-label="Tìm kiếm" style="position:relative;">
-  <i class="fa-solid fa-magnifying-glass"></i>
-
-  <span class="hamburger-icon icon search-anim-icon"
-    id="searchAnimIcon"
-    data-step="1"
-    style="font-size:18px;color:var(--text);display:inline-block;">
-  </span>
-</button>
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span class="hamburger-icon icon search-anim-icon" id="searchAnimIcon" data-step="1" style="font-size:18px;color:var(--text);display:inline-block;"></span>
+      </button>
     </div>
   </header>
 
-<nav class="side-menu" id="sidemenu" aria-label="Menu main">
-  <div class="menu-list" role="menu">
-    <a href="#" role="menuitem"><i class="fa-regular fa-house" style="width:22px;text-align:center"></i> Trang Chủ</a>
-    <a href="#" role="menuitem"><i class="fa-solid fa-film" style="width:22px;text-align:center"></i> Phim Mới</a>
-    
-    <div class="menu-item-dropdown">
-      <div class="dropdown-trigger" id="dropKhuVuc">
-        <span><i class="fa-solid fa-globe" style="width:22px;text-align:center;margin-right:10px"></i>Khu Vực</span>
-        <i class="fa-solid fa-chevron-down chevron"></i>
-      </div>
-      <div class="dropdown-content" id="listKhuVuc">
+  <nav class="side-menu" id="sidemenu" aria-label="Menu main">
+    <div class="menu-list" role="menu">
+      <a href="main.html" role="menuitem"><i class="fa-regular fa-house" style="width:22px;text-align:center"></i> Trang Chủ</a>
+      <a href="main.html" role="menuitem"><i class="fa-solid fa-film" style="width:22px;text-align:center"></i> Phim Mới</a>
+
+      <div class="menu-item-dropdown">
+        <div class="dropdown-trigger" id="dropKhuVuc">
+          <span><i class="fa-solid fa-globe" style="width:22px;text-align:center;margin-right:10px"></i>Khu Vực</span>
+          <i class="fa-solid fa-chevron-down chevron"></i>
         </div>
+        <div class="dropdown-content" id="listKhuVuc"></div>
+      </div>
+
+      <div class="menu-item-dropdown">
+        <div class="dropdown-trigger" id="dropTheLoai">
+          <span><i class="fa-solid fa-list" style="width:22px;text-align:center;margin-right:10px"></i>Thể loại</span>
+          <i class="fa-solid fa-chevron-down chevron"></i>
+        </div>
+        <div class="dropdown-content" id="listTheLoai"></div>
+      </div>
+
+      <a href="#" role="menuitem"><i class="fa-solid fa-star" style="width:22px;text-align:center"></i> Phim Hot</a>
+      <a href="#" role="menuitem"><i class="fa-solid fa-clock" style="width:22px;text-align:center"></i> Xem sau</a>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:8px 0" />
+      <a href="#" role="menuitem"><i class="fa-solid fa-circle-info" style="width:22px;text-align:center"></i> Giới thiệu</a>
+      <a href="#" role="menuitem"><i class="fa-solid fa-phone" style="width:22px;text-align:center"></i> Liên hệ</a>
     </div>
-
-<div class="menu-item-dropdown">
-  <div class="dropdown-trigger" id="dropTheLoai">
-    <span><i class="fa-solid fa-list" style="width:22px;text-align:center;margin-right:10px"></i>Thể loại</span>
-    <i class="fa-solid fa-chevron-down chevron"></i>
-  </div>
-  <div class="dropdown-content" id="listTheLoai">
-    </div>
-</div>
-
-    <a href="#" role="menuitem"><i class="fa-solid fa-star" style="width:22px;text-align:center"></i> Phim Hot</a>
-    <a href="#" role="menuitem"><i class="fa-solid fa-clock" style="width:22px;text-align:center"></i> Xem sau</a>
-    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:8px 0" />
-    <a href="#" role="menuitem"><i class="fa-solid fa-circle-info" style="width:22px;text-align:center"></i> Giới thiệu</a>
-    <a href="#" role="menuitem"><i class="fa-solid fa-phone" style="width:22px;text-align:center"></i> Liên hệ</a>
-  </div>
-  <div style="margin-top:auto;color:var(--muted);font-size:13px">Copyright © <span id="yr"></span> SotPhim</div>
-</nav>
-
+    <div style="margin-top:auto;color:var(--muted);font-size:13px">Copyright © <span id="yr"></span> SotPhim</div>
+  </nav>
 
   <div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
 
-<section class="hero-slider">
-  <div class="hero-dots"></div>
-</section>
-
-<section style="margin-top: 20px;">
-<div style="padding: 0 20px; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-  <h2 style="margin:0; font-size:20px;">Phim Mới nhất</h2>
-</div>
-
-<section id="latest-movies" class="cards-wrapper">
+  <!-- HERO SLIDER -->
+  <section class="hero-slider" id="heroSlider">
+    <div class="hero-dots" id="heroDots"></div>
   </section>
 
+  <!-- LATEST MOVIES -->
+  <section style="margin-top: 20px;">
+    <div class="section-header">
+      <h2 style="font-size:20px;">Phim Mới Nhất</h2>
+    </div>
+    <section id="latest-movies" class="cards-wrapper"></section>
+  </section>
 
-<section style="margin-top: 20px;">
-  <div style="padding: 0 20px; display:flex; justify-content:space-between; align-items:center;">
-    <h2 style="margin:0; font-size:20px; font-weight: 600;">Bạn đang quan tâm gì?</h2>
+  <!-- GENRE SLIDER -->
+  <section style="margin-top: 20px;">
+    <div class="section-header">
+      <h2 style="font-weight: 600;">Bạn đang quan tâm gì?</h2>
+    </div>
+    <div class="genre-slider">
+      <a href="javascript:void(0)" onclick="loadCategory('hanh-dong')" class="genre-item bg-action"><span class="genre-title">Hành Động</span></a>
+      <a href="javascript:void(0)" onclick="loadCategory('vien-tuong')" class="genre-item bg-sci-fi"><span class="genre-title">Viễn Tưởng</span></a>
+      <a href="javascript:void(0)" onclick="loadCategory('tinh-cam')" class="genre-item bg-romance"><span class="genre-title">Tình Cảm</span></a>
+      <a href="javascript:void(0)" onclick="loadCategory('hai-huoc')" class="genre-item bg-comedy"><span class="genre-title">Hài Hước</span></a>
+      <a href="javascript:void(0)" onclick="loadCategory('bi-an')" class="genre-item bg-mystery"><span class="genre-title">Bí Ẩn</span></a>
+      <a href="javascript:void(0)" onclick="loadCategory('chinh-kich')" class="genre-item bg-drama"><span class="genre-title">Chính Kịch</span></a>
+      <a href="javascript:void(0)" onclick="loadCategory('hinh-su')" class="genre-item bg-crime"><span class="genre-title">Hình Sự</span></a>
+      <a href="javascript:void(0)" onclick="loadCategory('hoat-hinh')" class="genre-item bg-anime"><span class="genre-title">Hoạt Hình</span></a>
+      <a href="javascript:void(0)" onclick="loadCategory('gia-dinh')" class="genre-item bg-family"><span class="genre-title">Gia Đình</span></a>
+      <a href="javascript:void(0)" onclick="loadCategory('tai-lieu')" class="genre-item bg-documentary"><span class="genre-title">Tài Liệu</span></a>
+    </div>
+  </section>
+
+  <!-- COUNTRY SECTIONS -->
+  <div class="section-header" style="margin-top:20px;">
+    <h2>Phim Hàn Quốc Mới</h2>
+    <a href="javascript:void(0)" onclick="loadCountry('han-quoc')">Xem tất cả</a>
   </div>
+  <section id="han-quoc" class="cards-wrapper"></section>
 
-<div class="genre-slider">
-
-  <a href="/the-loai/hanh-dong" class="genre-item bg-action">
-    <span class="genre-title">Hành Động</span>
-  </a>
-
-  <a href="/the-loai/vien-tuong" class="genre-item bg-sci-fi">
-    <span class="genre-title">Viễn Tưởng</span>
-  </a>
-
-  <a href="/the-loai/tinh-cam" class="genre-item bg-romance">
-    <span class="genre-title">Tình Cảm</span>
-  </a>
-
-  <a href="/the-loai/hai-huoc" class="genre-item bg-comedy">
-    <span class="genre-title">Hài Hước</span>
-  </a>
-
-  <a href="/the-loai/bi-an" class="genre-item bg-mystery">
-    <span class="genre-title">Bí Ẩn</span>
-  </a>
-
-  <a href="/the-loai/chinh-kich" class="genre-item bg-drama">
-    <span class="genre-title">Chính Kịch</span>
-  </a>
-
-  <a href="/the-loai/hinh-su" class="genre-item bg-crime">
-    <span class="genre-title">Hình Sự</span>
-  </a>
-
-  <a href="/the-loai/hoat-hinh" class="genre-item bg-anime">
-    <span class="genre-title">Hoạt Hình</span>
-  </a>
-
-  <a href="/the-loai/gia-dinh" class="genre-item bg-family">
-    <span class="genre-title">Gia Đình</span>
-  </a>
-
-  <a href="/the-loai/tai-lieu" class="genre-item bg-documentary">
-    <span class="genre-title">Tài Liệu</span>
-  </a>
-</div>
-
-
-<div style="padding: 0 20px; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-  <h2 style="margin:0; font-size:18px;">Phim Hàn Quốc Mới</h2>
-  <a href="#" style="color:var(--accent); text-decoration:none; font-size:13px;">Xem tất cả</a>
-</div>
-
-<section id="han-quoc" class="cards-wrapper">
-  </section>
-
-<div style="padding: 0 20px; display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-  <h2 style="margin:0; font-size:18px;">Phim Trung Quốc Mới</h2>
-  <a href="#" style="color:var(--accent); text-decoration:none; font-size:13px;">Xem tất cả</a>
-</div>
-
-<section id="trung-quoc" class="cards-wrapper">
-  </section>
-
-<div style="padding: 0 20px; display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
-  <h2 style="margin:0; font-size:18px;">Phim Thái Lan Mới</h2>
-  <a href="#" style="color:var(--accent); text-decoration:none; font-size:13px;">Xem tất cả</a>
-</div>
-
-<section id="thai-lan" class="cards-wrapper">
-  </section>
-
-<div style="padding: 0 20px; display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
-  <h2 style="margin:0; font-size:18px;">Phim Việt Nam Mới</h2>
-  <a href="#" style="color:var(--accent); text-decoration:none; font-size:13px;">Xem tất cả</a>
-</div>
-
-<section id="viet-nam" class="cards-wrapper">
-  </section>
-
-
-
-<footer class="site-footer">
-
-<div class="sovereignty-wrap">
-  <div class="footer-sovereignty">
-    <img src="https://cdn.nhandan.vn/images/1ef398c4e2fb4bf07980a2ded785b3efa34a32bf3c30de657ea321a3b2a92b2cd50a2bcbd400315f55c0227a8414ec3e667230b4143f06152d02cab40f71e050/quockyvietnam-copy-7814.jpg" alt="Việt Nam" />
-    <span>Hoàng Sa & Trường Sa là của Việt Nam!</span>
+  <div class="section-header" style="margin-top:15px;">
+    <h2>Phim Trung Quốc Mới</h2>
+    <a href="javascript:void(0)" onclick="loadCountry('trung-quoc')">Xem tất cả</a>
   </div>
-</div>
+  <section id="trung-quoc" class="cards-wrapper"></section>
 
-  <div class="footer-top">
-    
-    <div class="footer-social">
-      <a href="#" class="footer-icon">
-        <i class="fab fa-discord"></i>
-      </a>
-      <a href="#" class="footer-icon">
-        <i class="fab fa-telegram"></i>
-      </a>
+  <div class="section-header" style="margin-top:20px;">
+    <h2>Phim Thái Lan Mới</h2>
+    <a href="javascript:void(0)" onclick="loadCountry('thai-lan')">Xem tất cả</a>
+  </div>
+  <section id="thai-lan" class="cards-wrapper"></section>
+
+  <div class="section-header" style="margin-top:20px;">
+    <h2>Phim Việt Nam Mới</h2>
+    <a href="javascript:void(0)" onclick="loadCountry('viet-nam')">Xem tất cả</a>
+  </div>
+  <section id="viet-nam" class="cards-wrapper"></section>
+
+  <footer class="site-footer">
+    <div class="sovereignty-wrap">
+      <div class="footer-sovereignty">
+        <img src="https://cdn.nhandan.vn/images/1ef398c4e2fb4bf07980a2ded785b3efa34a32bf3c30de657ea321a3b2a92b2cd50a2bcbd400315f55c0227a8414ec3e667230b4143f06152d02cab40f71e050/quockyvietnam-copy-7814.jpg" alt="Việt Nam" />
+        <span>Hoàng Sa & Trường Sa là của Việt Nam!</span>
+      </div>
     </div>
 
-    <div class="footer-links">
-      <a href="#">Chính sách bảo mật</a>
-      <a href="#">Điều khoản sử dụng</a>
-      <a href="#">Giới thiệu</a>
-      <a href="#">Liên hệ</a>
+    <div class="footer-top">
+      <div class="footer-social">
+        <a href="#" class="footer-icon"><i class="fab fa-discord"></i></a>
+        <a href="#" class="footer-icon"><i class="fab fa-telegram"></i></a>
+      </div>
+      <div class="footer-links">
+        <a href="#">Chính sách bảo mật</a>
+        <a href="#">Điều khoản sử dụng</a>
+        <a href="#">Giới thiệu</a>
+        <a href="#">Liên hệ</a>
+      </div>
     </div>
 
-  </div>
+    <div class="footer-desc">
+      <p>
+        <strong>SotPhim (Sọt Phim)</strong> - Phim hay cả sọt - trang xem phim online miễn phí Full HD Vietsub,
+        thuyết minh + lồng tiếng. Kho phim mới khổng lồ, phim chiếu rạp, phim bộ, phim lẻ từ nhiều quốc gia
+        như Việt Nam, Hàn Quốc, Trung Quốc, Thái Lan, Nhật Bản, Âu Mỹ… đa dạng thể loại.
+        Khám phá nền tảng phim trực tuyến hay nhất 2026 chất lượng 4K!
+      </p>
+    </div>
 
-  <div class="footer-desc">
-    <p>
-      <strong>SotPhim (Sọt Phim)</strong> - Phim hay cả sọt - trang xem phim online miễn phí Full HD Vietsub, 
-      thuyết minh + lồng tiếng. Kho phim mới khổng lồ, phim chiếu rạp, phim bộ, phim lẻ từ nhiều quốc gia 
-      như Việt Nam, Hàn Quốc, Trung Quốc, Thái Lan, Nhật Bản, Âu Mỹ… đa dạng thể loại. 
-      Khám phá nền tảng phim trực tuyến hay nhất 2026 chất lượng 4K!
-    </p>
-  </div>
+    <div class="footer-bottom">Copyright ©<span id="footerYear"></span> SotPhim</div>
+  </footer>
 
-  <div class="footer-bottom">Copyright ©2026 SotPhim</div>
-
-</footer>
 <script>
+// =============================================
+// GLOBAL STATE
+// =============================================
 const khuVucData = {
   data: {
     items: [
-      ["Trung Quốc","trung-quoc"], ["Hàn Quốc","han-quoc"], ["Nhật Bản","nhat-ban"], ["Thái Lan","thai-lan"], ["Âu Mỹ","au-my"],
-      ["Đài Loan","dai-loan"], ["Hồng Kông","hong-kong"], ["Ấn Độ","an-do"], ["Anh","anh"], ["Pháp","phap"], ["Canada","canada"],
-      ["Quốc Gia Khác","quoc-gia-khac"], ["Đức","duc"], ["Tây Ban Nha","tay-ban-nha"], ["Thổ Nhĩ Kỳ","tho-nhi-ky"], ["Hà Lan","ha-lan"],
-      ["Indonesia","indonesia"], ["Nga","nga"], ["Mexico","mexico"], ["Ba lan","ba-lan"], ["Úc","uc"], ["Thụy Điển","thuy-dien"],
-      ["Malaysia","malaysia"], ["Brazil","brazil"], ["Philippines","philippines"], ["Bồ Đào Nha","bo-dao-nha"], ["Ý","y"],
-      ["Đan Mạch","dan-mach"], ["UAE","uae"], ["Na Uy","na-uy"], ["Thụy Sĩ","thuy-si"], ["Châu Phi","chau-phi"], ["Nam Phi","nam-phi"],
-      ["Ukraina","ukraina"], ["Ả Rập Xê Út","a-rap-xe-ut"], ["Bỉ","bi"], ["Ireland","ireland"], ["Colombia","colombia"],
-      ["Phần Lan","phan-lan"], ["Việt Nam","viet-nam"], ["Chile","chile"], ["Hy Lạp","hy-lap"], ["Nigeria","nigeria"],
-      ["Argentina","argentina"], ["Singapore","singapore"]
+      ["Trung Quốc","trung-quoc"],["Hàn Quốc","han-quoc"],["Nhật Bản","nhat-ban"],["Thái Lan","thai-lan"],["Âu Mỹ","au-my"],
+      ["Đài Loan","dai-loan"],["Hồng Kông","hong-kong"],["Ấn Độ","an-do"],["Anh","anh"],["Pháp","phap"],["Canada","canada"],
+      ["Quốc Gia Khác","quoc-gia-khac"],["Đức","duc"],["Tây Ban Nha","tay-ban-nha"],["Thổ Nhĩ Kỳ","tho-nhi-ky"],["Hà Lan","ha-lan"],
+      ["Indonesia","indonesia"],["Nga","nga"],["Mexico","mexico"],["Ba lan","ba-lan"],["Úc","uc"],["Thụy Điển","thuy-dien"],
+      ["Malaysia","malaysia"],["Brazil","brazil"],["Philippines","philippines"],["Bồ Đào Nha","bo-dao-nha"],["Ý","y"],
+      ["Đan Mạch","dan-mach"],["UAE","uae"],["Na Uy","na-uy"],["Thụy Sĩ","thuy-si"],["Châu Phi","chau-phi"],["Nam Phi","nam-phi"],
+      ["Ukraina","ukraina"],["Ả Rập Xê Út","a-rap-xe-ut"],["Bỉ","bi"],["Ireland","ireland"],["Colombia","colombia"],
+      ["Phần Lan","phan-lan"],["Việt Nam","viet-nam"],["Chile","chile"],["Hy Lạp","hy-lap"],["Nigeria","nigeria"],
+      ["Argentina","argentina"],["Singapore","singapore"]
     ].map(([name, slug]) => ({ name, slug }))
   }
 };
@@ -932,24 +875,23 @@ const khuVucData = {
 const theLoaiData = {
   data: {
     items: [
-      ["Hành Động","hanh-dong"], ["Tình Cảm","tinh-cam"], ["Hài Hước","hai-huoc"], ["Cổ Trang","co-trang"], ["Tâm Lý","tam-ly"],
-      ["Hình Sự","hinh-su"], ["Chiến Tranh","chien-tranh"], ["Thể Thao","the-thao"], ["Võ Thuật","vo-thuat"], ["Viễn Tưởng","vien-tuong"],
-      ["Phiêu Lưu","phieu-luu"], ["Khoa Học","khoa-hoc"], ["Kinh Di","kinh-di"], ["Âm Nhạc","am-nhac"], ["Thần Thoại","than-thoai"],
-      ["Tài Liệu","tai-lieu"], ["Gia Đình","gia-dinh"], ["Chính kịch","chinh-kich"], ["Bí ẩn","bi-an"], ["Học Đường","hoc-duong"],
-      ["Kinh Điển","kinh-dien"], ["Phim 18+","phim-18"], ["Short Drama","short-drama"]
+      ["Hành Động","hanh-dong"],["Tình Cảm","tinh-cam"],["Hài Hước","hai-huoc"],["Cổ Trang","co-trang"],["Tâm Lý","tam-ly"],
+      ["Hình Sự","hinh-su"],["Chiến Tranh","chien-tranh"],["Thể Thao","the-thao"],["Võ Thuật","vo-thuat"],["Viễn Tưởng","vien-tuong"],
+      ["Phiêu Lưu","phieu-luu"],["Khoa Học","khoa-hoc"],["Kinh Di","kinh-di"],["Âm Nhạc","am-nhac"],["Thần Thoại","than-thoai"],
+      ["Tài Liệu","tai-lieu"],["Gia Đình","gia-dinh"],["Chính kịch","chinh-kich"],["Bí ẩn","bi-an"],["Học Đường","hoc-duong"],
+      ["Kinh Điển","kinh-dien"],["Phim 18+","phim-18"],["Short Drama","short-drama"]
     ].map(([name, slug]) => ({ name, slug }))
   }
 };
 
-// --- BIẾN TOÀN CỤC ---
-const cdnImage = "https://img.ophim.live/uploads/movies/";
+let cdnImage = "https://img.ophim.live/uploads/movies/";
+const BASE_API = "https://ophim1.com";
 const totalFrames = 21;
 let animationId = null;
 let searchAnimationId = null;
-let debounceTimer;
+let debounceTimer = null;
 
 // Selectors
-const latestMoviesContainer = document.getElementById('latest-movies');
 const hamburger = document.getElementById('hamburger');
 const sideMenu = document.getElementById('sidemenu');
 const overlay = document.getElementById('overlay');
@@ -962,7 +904,343 @@ const brand = document.querySelector('.brand');
 const searchIcon = searchBtn ? searchBtn.querySelector('i') : null;
 const iconContainer = hamburger ? hamburger.querySelector('.hamburger-icon') : null;
 
-// --- INITIALIZE DROPDOWNS ---
+// =============================================
+// IMAGE LOADING HELPER
+// =============================================
+function onImageLoad(img) {
+  img.addEventListener('load', () => img.classList.add('loaded'));
+  img.addEventListener('error', () => {
+    img.src = 'https://via.placeholder.com/150x200/1a2332/9aa4b2?text=No+Image';
+    img.classList.add('loaded');
+  });
+  if (img.complete && img.naturalWidth !== 0) img.classList.add('loaded');
+}
+
+function getEpisodeBadge(movie) {
+  const ep = movie.episode_current || '';
+  if (!ep) return movie.type === 'single' ? 'Full' : 'HD';
+  if (ep.toLowerCase().includes('full') || ep.toLowerCase().includes('hoàn tất')) return 'Full';
+  return ep;
+}
+
+// =============================================
+// RENDER MOVIE CARDS
+// =============================================
+function renderCards(container, movies) {
+  if (!container) return;
+  container.innerHTML = movies.map(movie => {
+    const imgSrc = movie.thumb_url
+      ? (movie.thumb_url.startsWith('http') ? movie.thumb_url : `${cdnImage}${movie.thumb_url}`)
+      : '';
+    const badge = getEpisodeBadge(movie);
+    return `
+      <div class="card-item">
+        <a href="phim.html?slug=${movie.slug}" style="text-decoration:none; color:inherit;">
+          <div class="card-poster">
+            <img class="poster-img" src="${imgSrc}" alt="${movie.name}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.src='https://via.placeholder.com/150x200/1a2332/9aa4b2?text=No+Image';this.classList.add('loaded')">
+            <div class="card-episode">${badge}</div>
+          </div>
+          <div class="card-title" title="${movie.name}">${movie.name}</div>
+        </a>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderSkeletons(container, count = 10) {
+  if (!container) return;
+  container.innerHTML = Array(count).fill(0).map(() =>
+    `<div class="card-item is-loading"><div class="card-poster"></div><div class="card-title"></div></div>`
+  ).join('');
+}
+
+// =============================================
+// API FETCHES
+// =============================================
+async function fetchHome() {
+  const container = document.getElementById('latest-movies');
+  renderSkeletons(container, 12);
+  try {
+    const res = await fetch(`${BASE_API}/v1/api/home`);
+    const data = await res.json();
+    if (data.status === 'success' && data.data) {
+      if (data.data.APP_DOMAIN_CDN_IMAGE) cdnImage = data.data.APP_DOMAIN_CDN_IMAGE;
+      renderCards(container, data.data.items || []);
+    }
+  } catch (err) {
+    console.error('Lỗi tải phim trang chủ:', err);
+    if (container) container.innerHTML = '<p style="padding:20px;color:var(--muted);">Không thể tải dữ liệu.</p>';
+  }
+}
+
+async function fetchCountrySection(countrySlug) {
+  const container = document.getElementById(countrySlug);
+  if (!container) return;
+  renderSkeletons(container, 10);
+  try {
+    const res = await fetch(`${BASE_API}/v1/api/quoc-gia/${countrySlug}?limit=12&sort_field=modified.time&sort_type=desc`);
+    const data = await res.json();
+    if (data.status === 'success' && data.data) {
+      if (data.data.APP_DOMAIN_CDN_IMAGE) cdnImage = data.data.APP_DOMAIN_CDN_IMAGE;
+      renderCards(container, data.data.items || []);
+    }
+  } catch (err) {
+    console.error(`Lỗi tải phim ${countrySlug}:`, err);
+  }
+}
+
+function loadCountry(slug) {
+  const container = document.getElementById(slug);
+  if (container) {
+    renderSkeletons(container, 10);
+    fetchCountrySection(slug);
+  }
+}
+
+function loadCategory(slug) {
+  const container = document.getElementById('latest-movies');
+  if (!container) return;
+  renderSkeletons(container, 12);
+  fetch(`${BASE_API}/v1/api/the-loai/${slug}?limit=12`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success' && data.data) {
+        renderCards(container, data.data.items || []);
+        // scroll to movies
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    })
+    .catch(err => console.error(err));
+}
+
+// =============================================
+// HERO SLIDER
+// =============================================
+async function fetchHeroMovies() {
+  const heroSlider = document.getElementById('heroSlider');
+  const dotsWrap = document.getElementById('heroDots');
+  if (!heroSlider) return;
+
+  try {
+    const res = await fetch(`${BASE_API}/v1/api/danh-sach/phim-bo?limit=6&sort_field=modified.time&sort_type=desc`);
+    const data = await res.json();
+
+    if (data.status === 'success' && data.data) {
+      const localCdn = data.data.APP_DOMAIN_CDN_IMAGE || cdnImage;
+      const items = (data.data.items || []).slice(0, 5);
+
+      heroSlider.querySelectorAll('.hero-slide').forEach(s => s.remove());
+
+      items.forEach((movie, index) => {
+        const slide = document.createElement('a');
+        slide.href = `phim.html?slug=${movie.slug}`;
+        slide.className = `hero-slide${index === 0 ? ' active' : ''}`;
+        const bg = movie.thumb_url
+          ? (movie.thumb_url.startsWith('http') ? movie.thumb_url : `${localCdn}${movie.thumb_url}`)
+          : '';
+        slide.style.backgroundImage = `url('${bg}')`;
+
+        const cats = Array.isArray(movie.category) ? movie.category.map(c => c.name).slice(0, 2) : [];
+        const catTags = cats.map(c => `<span class="hero-tag genre">${c}</span>`).join('');
+
+        slide.innerHTML = `
+          <div class="hero-content">
+            <div class="hero-tags">
+              <span class="hero-tag quality">${movie.quality || 'HD'}</span>
+              <span class="hero-tag lang">${movie.lang || 'Vietsub'}</span>
+              <span class="hero-tag movie">${movie.type === 'series' ? 'Phim Bộ' : 'Phim Lẻ'}</span>
+              ${catTags}
+            </div>
+            <h2>${movie.name}</h2>
+            <p class="hero-meta">
+              <span>${movie.year || ''}</span>
+              <span class="hero-separator">|</span>
+              <span>${movie.episode_current || 'Full'}</span>
+            </p>
+          </div>
+        `;
+        heroSlider.insertBefore(slide, dotsWrap);
+      });
+
+      initHeroSlider();
+    }
+  } catch (err) {
+    console.error('Lỗi tải Hero:', err);
+  }
+}
+
+function initHeroSlider() {
+  const slider = document.getElementById('heroSlider');
+  const dotsWrap = document.getElementById('heroDots');
+  const slides = slider.querySelectorAll('.hero-slide');
+  if (!slider || slides.length === 0) return;
+
+  let current = 0;
+  let interval;
+
+  dotsWrap.innerHTML = Array.from(slides).map((_, i) =>
+    `<span${i === 0 ? ' class="active"' : ''}></span>`
+  ).join('');
+  const dots = dotsWrap.querySelectorAll('span');
+
+  function goTo(index) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (index + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function startAuto() {
+    clearInterval(interval);
+    interval = setInterval(() => goTo(current + 1), 4000);
+  }
+
+  dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startAuto(); }));
+
+  let startX = 0;
+  slider.addEventListener('mousedown', e => { startX = e.clientX; slider.classList.add('dragging'); });
+  slider.addEventListener('mouseup', e => {
+    slider.classList.remove('dragging');
+    const diff = e.clientX - startX;
+    if (Math.abs(diff) > 40) { goTo(diff < 0 ? current + 1 : current - 1); startAuto(); }
+  });
+  slider.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  slider.addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].clientX - startX;
+    if (Math.abs(diff) > 40) { goTo(diff < 0 ? current + 1 : current - 1); startAuto(); }
+  });
+
+  startAuto();
+}
+
+// =============================================
+// MENU ANIMATIONS
+// =============================================
+function setFrame(step) {
+  if (!iconContainer) return;
+  for (let i = 0; i <= totalFrames; i++) iconContainer.classList.remove(`icon-frame_${i.toString().padStart(2, '0')}`);
+  iconContainer.classList.add(`icon-frame_${step.toString().padStart(2, '0')}`);
+}
+
+function animateHamburger(isOpening) {
+  if (animationId) cancelAnimationFrame(animationId);
+  const start = isOpening ? 0 : totalFrames;
+  const end = isOpening ? totalFrames : 0;
+  const duration = 175;
+  let startTime = null;
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    let progress = Math.min((timestamp - startTime) / duration, 1);
+    let frame = Math.round(start + (end - start) * (isOpening ? progress : (1 - Math.pow(1 - progress, 3))));
+    setFrame(Math.max(0, Math.min(totalFrames, frame)));
+    if (progress < 1) animationId = requestAnimationFrame(step);
+  }
+  animationId = requestAnimationFrame(step);
+}
+
+function openMenu() { sideMenu.classList.add('open'); overlay.classList.add('show'); animateHamburger(true); }
+function closeMenu() { sideMenu.classList.remove('open'); overlay.classList.remove('show'); animateHamburger(false); }
+
+// =============================================
+// SEARCH
+// =============================================
+function setSearchFrame(step) {
+  if (!searchAnimIcon) return;
+  for (let i = 0; i <= totalFrames; i++) searchAnimIcon.classList.remove(`icon-frame_${i.toString().padStart(2, '0')}`);
+  searchAnimIcon.classList.add(`icon-frame_${step.toString().padStart(2, '0')}`);
+}
+
+function animateSearchIcon(opening) {
+  if (searchAnimationId) cancelAnimationFrame(searchAnimationId);
+  const start = opening ? 2 : 21;
+  const end = opening ? 21 : 2;
+  const duration = 180;
+  let startTime = null;
+  function step(timestamp) {
+    if (!startTime) startTime = timestamp;
+    let progress = Math.min((timestamp - startTime) / duration, 1);
+    setSearchFrame(Math.max(2, Math.min(21, Math.round(start + (end - start) * progress))));
+    if (progress < 1) searchAnimationId = requestAnimationFrame(step);
+  }
+  searchAnimationId = requestAnimationFrame(step);
+}
+
+function openSearch() {
+  searchWrap.classList.add('open');
+  brand?.classList.add('hide');
+  if (searchIcon) { searchIcon.style.opacity = '0'; searchIcon.style.transform = 'scale(.8)'; }
+  searchAnimIcon?.classList.add('show');
+  setSearchFrame(2);
+  animateSearchIcon(true);
+  setTimeout(() => searchInput?.focus(), 100);
+}
+
+function closeSearch() {
+  if (!searchWrap?.classList.contains('open')) return;
+  searchWrap.classList.remove('open');
+  searchResults?.classList.remove('show');
+  animateSearchIcon(false);
+  setTimeout(() => {
+    searchAnimIcon?.classList.remove('show');
+    if (searchIcon) { searchIcon.style.opacity = '1'; searchIcon.style.transform = 'scale(1)'; }
+  }, 180);
+  brand?.classList.remove('hide');
+  if (searchInput) searchInput.value = '';
+}
+
+function showSearchSkeletons() {
+  if (!searchResults) return;
+  searchResults.innerHTML = Array(3).fill(0).map(() => `
+    <div class="search-item-result">
+      <div class="skeleton sk-img"></div>
+      <div class="search-item-info" style="width:100%">
+        <div class="skeleton sk-text"></div>
+        <div style="display:flex;gap:5px"><div class="skeleton sk-tag"></div><div class="skeleton sk-tag"></div></div>
+      </div>
+    </div>`).join('');
+  searchResults.classList.add('show');
+}
+
+function doSearch(keyword) {
+  showSearchSkeletons();
+  fetch(`${BASE_API}/v1/api/tim-kiem?keyword=${encodeURIComponent(keyword)}`)
+    .then(r => r.json())
+    .then(data => {
+      if (!searchResults) return;
+      if (data.status === 'success' && data.data.items && data.data.items.length > 0) {
+        searchResults.innerHTML = data.data.items.slice(0, 5).map(item => {
+          const img = item.thumb_url
+            ? (item.thumb_url.startsWith('http') ? item.thumb_url : `${cdnImage}${item.thumb_url}`)
+            : '';
+          return `
+            <a href="phim.html?slug=${item.slug}" class="search-item-result">
+              <img src="${img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50x70/1a2332/9aa4b2?text=?'">
+              <div class="search-item-info">
+                <div class="search-item-name">${item.name}</div>
+                <div class="search-item-tags">
+                  <span class="search-item-tag highlight">${item.episode_current || 'Full'}</span>
+                  <span class="search-item-tag">${item.quality || 'HD'}</span>
+                  <span class="search-item-tag">${item.year || ''}</span>
+                </div>
+              </div>
+            </a>`;
+        }).join('') + `
+          <a href="https://ophim1.com/tim-kiem?keyword=${encodeURIComponent(keyword)}" target="_blank" style="display:block;text-align:center;padding:10px;font-size:12px;color:var(--accent);text-decoration:none;background:rgba(255,107,107,0.05);border-top:1px solid rgba(255,255,255,0.05);">
+            Xem tất cả <i class="fa-solid fa-chevron-right" style="font-size:10px;margin-left:4px;"></i>
+          </a>`;
+      } else {
+        searchResults.innerHTML = '<div style="padding:15px;font-size:12px;color:var(--muted);text-align:center;">Không tìm thấy phim...</div>';
+      }
+    })
+    .catch(() => {
+      if (searchResults) searchResults.innerHTML = '<div style="padding:15px;font-size:12px;color:var(--muted);text-align:center;">Lỗi kết nối...</div>';
+    });
+}
+
+// =============================================
+// DROPDOWNS
+// =============================================
 function initDropdowns() {
   const configs = [
     { triggerId: 'dropKhuVuc', containerId: 'listKhuVuc', data: khuVucData.data.items, path: 'quoc-gia' },
@@ -974,28 +1252,21 @@ function initDropdowns() {
     const trigger = document.getElementById(conf.triggerId);
     if (!container || !trigger) return;
 
-    container.innerHTML = conf.data.map(item => `
-      <a href="/${conf.path}/${item.slug}" role="menuitem">${item.name}</a>
-    `).join('');
+    container.innerHTML = conf.data.map(item =>
+      `<a href="javascript:void(0)" onclick="loadCategory('${item.slug}')" role="menuitem">${item.name}</a>`
+    ).join('');
 
-    trigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      document.querySelectorAll('.dropdown-content').forEach(el => {
-        if(el.id !== conf.containerId) el.classList.remove('show');
-      });
-      document.querySelectorAll('.dropdown-trigger').forEach(el => {
-        if(el.id !== conf.triggerId) el.classList.remove('active');
-      });
+    trigger.addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation();
+      document.querySelectorAll('.dropdown-content').forEach(el => { if (el.id !== conf.containerId) el.classList.remove('show'); });
+      document.querySelectorAll('.dropdown-trigger').forEach(el => { if (el.id !== conf.triggerId) el.classList.remove('active'); });
       const isOpen = container.classList.toggle('show');
       trigger.classList.toggle('active');
-      if (isOpen) {
-        setTimeout(() => { container.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 300);
-      }
+      if (isOpen) setTimeout(() => container.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300);
     });
   });
 
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', e => {
     if (!e.target.closest('.menu-item-dropdown')) {
       document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('show'));
       document.querySelectorAll('.dropdown-trigger').forEach(el => el.classList.remove('active'));
@@ -1003,359 +1274,46 @@ function initDropdowns() {
   });
 }
 
-function renderSkeletons(container, count = 10) {
-  if (!container) return;
-  container.innerHTML = '';
-  for (let i = 0; i < count; i++) {
-    const sk = document.createElement('div');
-    sk.className = 'card-item is-loading';
-    sk.innerHTML = `<div class="card-poster"></div><div class="card-title"></div>`;
-    container.appendChild(sk);
-  }
-}
-
-async function fetchLatestMovies() {
-  if (!latestMoviesContainer) return;
-  renderSkeletons(latestMoviesContainer, 10);
-  try {
-    const response = await fetch('https://ophim1.com/v1/api/home');
-    const resData = await response.json();
-    if (resData.status === "success") {
-      latestMoviesContainer.innerHTML = resData.data.items.map(movie => `
-        <div class="card-item">
-          <a href="/phim/${movie.slug}" style="text-decoration:none; color:inherit;">
-            <div class="card-poster" style="background-image:url('${cdnImage}${movie.thumb_url}')">
-              <div class="card-episode">${movie.episode_current}</div>
-            </div>
-            <div class="card-title" title="${movie.name}">${movie.name}</div>
-          </a>
-        </div>
-      `).join('');
-    }
-  } catch (error) {
-    console.error("Lỗi fetch phim:", error);
-    latestMoviesContainer.innerHTML = '<p style="padding:20px; color:var(--muted);">Không thể tải dữ liệu...</p>';
-  }
-}
-
-// --- FETCH HERO SLIDER ---
-async function fetchHeroMovies() {
-  const heroSlider = document.querySelector('.hero-slider');
-  const dotsWrap = document.querySelector('.hero-dots');
-  if (!heroSlider) return;
-
-  try {
-    const response = await fetch('https://ophim1.com/v1/api/the-loai/chien-tranh?page=4');
-    const resData = await response.json();
-
-    if (resData.status === "success") {
-      const items = resData.data.items.slice(0, 5);
-      
-      const oldSlides = heroSlider.querySelectorAll('.hero-slide');
-      oldSlides.forEach(s => s.remove());
-
-      items.forEach((movie, index) => {
-        const slide = document.createElement('a');
-        slide.href = `/video/${movie.slug}`;
-        slide.className = `hero-slide ${index === 0 ? 'active' : ''}`;
-        slide.style.backgroundImage = `url('${cdnImage}${movie.thumb_url}')`;
-        
-        slide.innerHTML = `
-          <div class="hero-content">
-            <div class="hero-tags">
-              <span class="hero-tag quality">${movie.quality || 'HD'}</span>
-              <div class="hero-tag lang">${movie.lang || 'Vietsub'}</div>
-              <span class="hero-tag movie">${movie.type === 'series' ? 'Series' : 'Movie'}</span>
-            </div>
-            <h2>${movie.name}</h2>
-            <p class="hero-meta">
-              <span class="hero-year">${movie.year}</span>
-              <span class="hero-separator">|</span>
-              <span class="hero-views">${movie.episode_current || 'Full'}</span>
-            </p>
-          </div>
-        `;
-        heroSlider.insertBefore(slide, dotsWrap);
-      });
-
-      // Khởi tạo logic trượt sau khi đã có HTML mới
-      initHeroSlider(); 
-    }
-  } catch (error) {
-    console.error("Lỗi tải phim Hero:", error);
-  }
-}
-
-// --- MENU ANIMATION ---
-function setFrame(step) {
-  if(!iconContainer) return;
-  for (let i = 0; i <= totalFrames; i++) {
-    iconContainer.classList.remove(`icon-frame_${i.toString().padStart(2, '0')}`);
-  }
-  iconContainer.classList.add(`icon-frame_${step.toString().padStart(2, '0')}`);
-}
-
-function animateHamburger(isOpening) {
-  if (animationId) cancelAnimationFrame(animationId);
-  const start = isOpening ? 0 : totalFrames;
-  const end = isOpening ? totalFrames : 0;
-  const duration = 175;
-  let startTime = null;
-
-  function step(timestamp) {
-    if (!startTime) startTime = timestamp;
-    let progress = (timestamp - startTime) / duration;
-    progress = Math.min(progress, 1);
-    let currentFrame = Math.round(start + (end - start) * (isOpening ? progress : (1 - Math.pow(1 - progress, 3))));
-    setFrame(Math.max(0, Math.min(totalFrames, currentFrame)));
-    if (progress < 1) animationId = requestAnimationFrame(step);
-  }
-  animationId = requestAnimationFrame(step);
-}
-
-function openMenu(){ sideMenu.classList.add('open'); overlay.classList.add('show'); animateHamburger(true); }
-function closeMenu(){ sideMenu.classList.remove('open'); overlay.classList.remove('show'); animateHamburger(false); }
-
-// --- SEARCH LOGIC ---
-function setSearchFrame(step) {
-  if(!searchAnimIcon) return;
-  for (let i = 0; i <= totalFrames; i++) {
-    searchAnimIcon.classList.remove(`icon-frame_${i.toString().padStart(2,'0')}`);
-  }
-  searchAnimIcon.classList.add(`icon-frame_${step.toString().padStart(2,'0')}`);
-}
-
-function animateSearchIcon(opening) {
-  if (searchAnimationId) cancelAnimationFrame(searchAnimationId);
-  const start = opening ? 2 : 21;
-  const end = opening ? 21 : 2;
-  const duration = 180;
-  let startTime = null;
-  function step(timestamp){
-    if(!startTime) startTime = timestamp;
-    let progress = (timestamp - startTime) / duration;
-    progress = Math.min(progress, 1);
-    let frame = Math.round(start + (end - start) * progress);
-    setSearchFrame(Math.max(2, Math.min(21, frame)));
-    if(progress < 1) searchAnimationId = requestAnimationFrame(step);
-  }
-  searchAnimationId = requestAnimationFrame(step);
-}
-
-function openSearch(){
-  searchWrap.classList.add('open');
-  brand?.classList.add('hide');
-  if(searchIcon) { searchIcon.style.opacity = '0'; searchIcon.style.transform = 'scale(.8)'; }
-  searchAnimIcon?.classList.add('show');
-  setSearchFrame(2);
-  animateSearchIcon(true);
-  setTimeout(()=>searchInput?.focus(), 100);
-}
-
-function closeSearch(){
-  if(!searchWrap?.classList.contains('open')) return;
-  searchWrap.classList.remove('open');
-  searchResults?.classList.remove('show');
-  animateSearchIcon(false);
-  setTimeout(()=>{
-    searchAnimIcon?.classList.remove('show');
-    if(searchIcon) { searchIcon.style.opacity = '1'; searchIcon.style.transform = 'scale(1)'; }
-  },180);
-  brand?.classList.remove('hide');
-  if(searchInput) searchInput.value = '';
-}
-
-function showSearchSkeletons() {
-    if(!searchResults) return;
-    searchResults.innerHTML = Array(3).fill(0).map(() => `
-        <div class="search-item-result">
-            <div class="skeleton sk-img"></div>
-            <div class="search-item-info" style="width: 100%">
-                <div class="skeleton sk-text"></div>
-                <div style="display:flex; gap:5px"><div class="skeleton sk-tag"></div><div class="skeleton sk-tag"></div></div>
-            </div>
-        </div>`).join('');
-    searchResults.classList.add('show');
-}
-
-// --- HERO SLIDER CORE ---
-function initHeroSlider() {
-    const slider = document.querySelector('.hero-slider');
-    let slides = document.querySelectorAll('.hero-slide');
-    const dotsWrap = document.querySelector('.hero-dots');
-    let currentSlide = 0;
-    let interval;
-    let startX = 0;
-
-    if (!slider || slides.length === 0) return;
-
-    const maxSlides = slides.length;
-
-    const goToSlide = (index) => {
-        slides.forEach(s => s.classList.remove('active'));
-        if(dotsWrap) Array.from(dotsWrap.children).forEach(d => d.classList.remove('active'));
-        
-        currentSlide = index;
-        slides[currentSlide].classList.add('active');
-        if(dotsWrap && dotsWrap.children[currentSlide]) dotsWrap.children[currentSlide].classList.add('active');
-    };
-
-    if(dotsWrap) {
-        dotsWrap.innerHTML = Array(maxSlides).fill(0).map((_, i) => `<span class="${i===0?'active':''}"></span>`).join('');
-        Array.from(dotsWrap.children).forEach((dot, i) => dot.onclick = () => { clearInterval(interval); goToSlide(i); startAuto(); });
-    }
-
-    const nextSlide = () => goToSlide((currentSlide + 1) % maxSlides);
-    const startAuto = () => { clearInterval(interval); interval = setInterval(nextSlide, 6000); };
-    
-    slider.ontouchstart = e => { clearInterval(interval); startX = e.touches[0].clientX; };
-    slider.ontouchend = e => {
-        let diff = e.changedTouches[0].clientX - startX;
-        if(Math.abs(diff) > 50) diff < 0 ? nextSlide() : goToSlide((currentSlide - 1 + maxSlides) % maxSlides);
-        startAuto();
-    };
-    startAuto();
-}
-
-// --- DOM READY ---
+// =============================================
+// INIT
+// =============================================
 document.addEventListener('DOMContentLoaded', () => {
-    const yr = document.getElementById('yr');
-    if(yr) yr.textContent = new Date().getFullYear();
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-    setFrame(0);
-    initDropdowns();
-    fetchLatestMovies();
-    fetchHeroMovies();
+  initDropdowns();
 
-    if(hamburger) hamburger.onclick = () => sideMenu.classList.contains('open') ? closeMenu() : openMenu();
-    if(overlay) overlay.onclick = () => { closeMenu(); closeSearch(); };
-    if(searchBtn) searchBtn.onclick = () => searchWrap.classList.contains('open') ? closeSearch() : openSearch();
+  if (hamburger) hamburger.onclick = () => sideMenu.classList.contains('open') ? closeMenu() : openMenu();
+  if (overlay) overlay.onclick = () => { closeMenu(); closeSearch(); };
+  if (searchBtn) searchBtn.onclick = () => searchWrap.classList.contains('open') ? closeSearch() : openSearch();
 
-    if(searchInput) {
-        searchInput.oninput = (e) => {
-            const keyword = e.target.value.trim();
-            clearTimeout(debounceTimer);
-            if (keyword.length < 2) { searchResults?.classList.remove('show'); return; }
-            debounceTimer = setTimeout(() => {
-                showSearchSkeletons();
-                fetch(`https://ophim1.com/v1/api/tim-kiem?keyword=${keyword}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.status === "success" && data.data.items.length > 0) {
-                            searchResults.innerHTML = data.data.items.slice(0, 4).map(item => `
-                                <a href="/phim/${item.slug}" class="search-item-result">
-                                    <img src="${cdnImage}${item.thumb_url}" alt="${item.name}">
-                                    <div class="search-item-info">
-                                        <div class="search-item-name">${item.name}</div>
-                                        <div class="search-item-tags">
-                                            <span class="search-item-tag highlight">${item.episode_current}</span>
-                                            <span class="search-item-tag">${item.quality}</span>
-                                        </div>
-                                    </div>
-                                </a>`).join('') + `<a href="/tim-kiem?keyword=${encodeURIComponent(keyword)}" class="search-view-all">Xem tất cả cho '<strong>${keyword}</strong>' <i class="fa-solid fa-chevron-right"></i></a>`;
-                        } else {
-                            searchResults.innerHTML = '<div style="padding:15px; font-size:12px; color:var(--muted); text-align:center;">Không tìm thấy phim...</div>';
-                        }
-                    });
-            }, 300);
-        };
-        searchInput.onkeydown = e => { if(e.key === 'Enter' && searchInput.value.trim()) window.location.href = `/tim-kiem?keyword=${encodeURIComponent(searchInput.value.trim())}`; };
-    }
+  if (searchInput) {
+    searchInput.oninput = e => {
+      const kw = e.target.value.trim();
+      clearTimeout(debounceTimer);
+      if (kw.length < 2) { searchResults?.classList.remove('show'); return; }
+      debounceTimer = setTimeout(() => doSearch(kw), 350);
+    };
+    searchInput.onkeydown = e => {
+      if (e.key === 'Enter' && searchInput.value.trim()) {
+        window.open(`https://ophim1.com/tim-kiem?keyword=${encodeURIComponent(searchInput.value.trim())}`, '_blank');
+      }
+      if (e.key === 'Escape') closeSearch();
+    };
+  }
 
-    document.addEventListener('keydown', e => { if(e.key === 'Escape') { closeMenu(); closeSearch(); } });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.header-right')) closeSearch();
+  });
+
+  // Load all data in parallel
+  fetchHeroMovies();
+  fetchHome();
+  fetchCountrySection('han-quoc');
+  fetchCountrySection('trung-quoc');
+  fetchCountrySection('thai-lan');
+  fetchCountrySection('viet-nam');
 });
-
-function showHanQuoc() {
-  const container = document.getElementById('han-quoc');
-  container.innerHTML = '';
-  for (let i = 0; i < 8; i++) {
-    container.innerHTML += `
-      <div class="card-item-vd is-loading">
-        <div class="card-poster-vd skeleton-box"></div>
-        <div class="card-title skeleton-box"></div>
-      </div>
-    `;
-  }
-}
-
-function showSkeletons(containerId, count = 24) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  
-  container.innerHTML = ''; 
-  for (let i = 0; i < count; i++) {
-    container.innerHTML += `
-      <div class="card-item-vd is-loading">
-        <div class="card-poster-vd skeleton-box"></div>
-        <div class="card-title skeleton-box"></div>
-      </div>
-    `;
-  }
-}
-
-async function fetchMoviesByCountry(countrySlug, containerId) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  try {
-    const response = await fetch(`https://ophim1.com/v1/api/quoc-gia/${countrySlug}`);
-    const resData = await response.json();
-
-    if (resData.status === "success") {
-      // Tạo một "mảnh" DOM tạm thời
-      const fragment = document.createDocumentFragment();
-      
-      resData.data.items.forEach(movie => {
-        const imageUrl = `${cdnImage}${movie.thumb_url}`;
-        const card = document.createElement('div');
-        card.className = 'card-item-vd';
-        card.innerHTML = `
-          <a href="/phim/${movie.slug}" style="text-decoration:none; color:inherit;">
-            <div class="card-poster-vd">
-              <div class="bg-blur" style="background-image:url('${imageUrl}')"></div>
-              <img class="poster-main" src="${imageUrl}" decoding="async" onload="onImageLoad(this)">
-              <div class="card-episode">${movie.episode_current}</div>
-            </div>
-            <div class="card-title">${movie.name}</div>
-          </a>
-        `;
-        fragment.appendChild(card);
-      });
-
-      // Xóa skeleton và chèn toàn bộ fragment vào một lần duy nhất
-      container.innerHTML = ''; 
-      container.appendChild(fragment);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// Hàm xử lý khi ảnh tải xong hoàn toàn
-function onImageLoad(img) {
-  // 1. Kiểm tra tỷ lệ ảnh
-  const ratio = img.naturalWidth / img.naturalHeight;
-  if (ratio > 1.2) {
-    img.classList.add('is-landscape');
-    img.parentElement.classList.add('has-landscape');
-  }
-  
-  // 2. Hiện ảnh mượt mà
-  img.classList.add('loaded');
-  
-  // 3. Xóa bỏ trạng thái loading của card cha nếu có
-  const cardItem = img.closest('.card-item-vd');
-  if (cardItem) cardItem.classList.remove('is-loading');
-}
-
-fetchMoviesByCountry('thai-lan', 'thai-lan', true);
-fetchMoviesByCountry('trung-quoc', 'trung-quoc', true);
-fetchMoviesByCountry('viet-nam', 'viet-nam', true);
-fetchMoviesByCountry('han-quoc', 'han-quoc', true);
-
 </script>
-
-
-
 </body>
 </html>
