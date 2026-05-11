@@ -507,10 +507,10 @@
             <span id="playerSubTitle" class="sub-title"></span>
           </div>
           <div class="movie-card">
-            <button class="watch-btn" id="watchDemoBtn" onclick="scrollToPlayer()">
+            <a class="watch-btn" id="watchNowBtn" href="#">
               <i class="fa-solid fa-play"></i>
-              <span>Xem Demo</span>
-            </button>
+              <span>Xem Ngay</span>
+            </a>
           </div>
           <div class="movie-actions">
             <button class="action-btn like">
@@ -526,22 +526,6 @@
               <span>Chia Sẻ</span>
             </button>
           </div>
-        </div>
-      </section>
-
-      <!-- VIDEO PLAYER EMBED -->
-      <section class="video-section" id="videoSection">
-        <div class="video-container">
-          <div class="video-section-title">
-            <i class="fa-solid fa-circle-play"></i> Xem Demo / Trailer
-          </div>
-          <div class="video-iframe-wrap" id="videoWrap">
-            <div class="video-placeholder" id="videoPlaceholder">
-              <i class="fa-solid fa-film"></i>
-              <p>Đang tải video...</p>
-            </div>
-          </div>
-          <div class="episode-servers" id="episodeServers"></div>
         </div>
       </section>
 
@@ -611,14 +595,23 @@
 const khuVucData = { data: { items: [["Trung Quốc","trung-quoc"],["Hàn Quốc","han-quoc"],["Nhật Bản","nhat-ban"],["Thái Lan","thai-lan"],["Âu Mỹ","au-my"],["Đài Loan","dai-loan"],["Hồng Kông","hong-kong"],["Ấn Độ","an-do"],["Anh","anh"],["Pháp","phap"],["Canada","canada"],["Quốc Gia Khác","quoc-gia-khac"],["Đức","duc"],["Tây Ban Nha","tay-ban-nha"],["Thổ Nhĩ Kỳ","tho-nhi-ky"],["Hà Lan","ha-lan"],["Indonesia","indonesia"],["Nga","nga"],["Mexico","mexico"],["Ba lan","ba-lan"],["Úc","uc"],["Thụy Điển","thuy-dien"],["Malaysia","malaysia"],["Brazil","brazil"],["Philippines","philippines"],["Bồ Đào Nha","bo-dao-nha"],["Ý","y"],["Đan Mạch","dan-mach"],["UAE","uae"],["Na Uy","na-uy"],["Thụy Sĩ","thuy-si"],["Châu Phi","chau-phi"],["Nam Phi","nam-phi"],["Ukraina","ukraina"],["Ả Rập Xê Út","a-rap-xe-ut"],["Bỉ","bi"],["Ireland","ireland"],["Colombia","colombia"],["Phần Lan","phan-lan"],["Việt Nam","viet-nam"],["Chile","chile"],["Hy Lạp","hy-lap"],["Nigeria","nigeria"],["Argentina","argentina"],["Singapore","singapore"]].map(([name,slug])=>({name,slug})) }};
 const theLoaiData = { data: { items: [["Hành Động","hanh-dong"],["Tình Cảm","tinh-cam"],["Hài Hước","hai-huoc"],["Cổ Trang","co-trang"],["Tâm Lý","tam-ly"],["Hình Sự","hinh-su"],["Chiến Tranh","chien-tranh"],["Thể Thao","the-thao"],["Võ Thuật","vo-thuat"],["Viễn Tưởng","vien-tuong"],["Phiêu Lưu","phieu-luu"],["Khoa Học","khoa-hoc"],["Kinh Di","kinh-di"],["Âm Nhạc","am-nhac"],["Thần Thoại","than-thoai"],["Tài Liệu","tai-lieu"],["Gia Đình","gia-dinh"],["Chính kịch","chinh-kich"],["Bí ẩn","bi-an"],["Học Đường","hoc-duong"],["Kinh Điển","kinh-dien"],["Phim 18+","phim-18"],["Short Drama","short-drama"]].map(([name,slug])=>({name,slug})) }};
 
-let cdnImage = "https://img.ophim.live/uploads/movies/";
+const FALLBACK_CDN = "https://img.ophim.live/uploads/movies/";
+let cdnImage = FALLBACK_CDN;
 const BASE_API = "https://ophim1.com";
+const PLACEHOLDER_IMG = "https://via.placeholder.com/150x220/0b1220/9aa4b2?text=No+Image";
 const totalFrames = 21;
 let animationId = null;
 let searchAnimationId = null;
 let debounceTimer = null;
-let allEpisodes = [];
-let currentEmbedUrl = null;
+
+// =============================================
+// CORE IMAGE URL HELPER
+// =============================================
+function getImageUrl(path, cdnBase) {
+  if (!path) return PLACEHOLDER_IMG;
+  if (path.startsWith('http')) return path;
+  return `${cdnBase || cdnImage}${path}`;
+}
 
 const hamburger = document.getElementById('hamburger');
 const sideMenu = document.getElementById('sidemenu');
@@ -632,50 +625,6 @@ const brand = document.querySelector('.brand');
 const searchIcon = searchBtn ? searchBtn.querySelector('i') : null;
 const iconContainer = hamburger ? hamburger.querySelector('.hamburger-icon') : null;
 
-// =============================================
-// SCROLL TO PLAYER
-// =============================================
-function scrollToPlayer() {
-  const sec = document.getElementById('videoSection');
-  if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-// =============================================
-// VIDEO PLAYER
-// =============================================
-function loadEmbedVideo(url) {
-  const wrap = document.getElementById('videoWrap');
-  if (!wrap || !url) return;
-  currentEmbedUrl = url;
-  wrap.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; fullscreen" scrolling="no" referrerpolicy="origin"></iframe>`;
-}
-
-function buildEpisodeTabs(episodes) {
-  const container = document.getElementById('episodeServers');
-  if (!container || !episodes || episodes.length === 0) return;
-
-  allEpisodes = episodes;
-
-  episodes.forEach((server, sIdx) => {
-    if (!server.server_data || server.server_data.length === 0) return;
-    const serverName = server.server_name || `Server ${sIdx + 1}`;
-
-    server.server_data.slice(0, 8).forEach((ep, eIdx) => {
-      if (!ep.link_embed) return;
-      const btn = document.createElement('button');
-      btn.className = `server-btn${sIdx === 0 && eIdx === 0 ? ' active' : ''}`;
-      btn.textContent = ep.name || `Tập ${eIdx + 1}`;
-      btn.title = serverName;
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        loadEmbedVideo(ep.link_embed);
-        scrollToPlayer();
-      });
-      container.appendChild(btn);
-    });
-  });
-}
 
 // =============================================
 // LOAD MOVIE DETAIL
@@ -709,20 +658,20 @@ async function loadMovieDetail(slug) {
       metaDesc.content = raw.substring(0, 160) + '...';
     }
 
-    // Background image (use thumb_url as backdrop)
-    const bgUrl = movie.thumb_url
-      ? (movie.thumb_url.startsWith('http') ? movie.thumb_url : `${cdnImage}${movie.thumb_url}`)
-      : '';
+    // Background image
+    const bgUrl = getImageUrl(movie.thumb_url);
     document.getElementById('playerBg').style.backgroundImage = `url('${bgUrl}')`;
 
     // Poster
     const posterImg = document.getElementById('playerPoster');
-    const posterUrl = movie.poster_url
-      ? (movie.poster_url.startsWith('http') ? movie.poster_url : `${cdnImage}${movie.poster_url}`)
-      : bgUrl;
+    const posterUrl = getImageUrl(movie.poster_url) || bgUrl;
     posterImg.src = posterUrl;
     posterImg.style.display = 'block';
     posterImg.onerror = () => { posterImg.src = bgUrl; };
+
+    // Wire up "Xem Ngay" button → video.html
+    const watchBtn = document.getElementById('watchNowBtn');
+    if (watchBtn) watchBtn.href = `video.html?slug=${movie.slug}&ep=1`;
 
     // Title
     document.getElementById('playerTitle').textContent = movie.name || '';
@@ -784,32 +733,6 @@ async function loadMovieDetail(slug) {
       ).join('');
     } else {
       castContainer.innerHTML = '<span style="color:var(--muted);font-size:13px;">Đang cập nhật...</span>';
-    }
-
-    // Episodes / video player
-    const episodes = Array.isArray(movie.episodes) ? movie.episodes : [];
-    buildEpisodeTabs(episodes);
-
-    // Auto-load first embed
-    let firstEmbed = null;
-    for (const server of episodes) {
-      if (server.server_data && server.server_data.length > 0 && server.server_data[0].link_embed) {
-        firstEmbed = server.server_data[0].link_embed;
-        break;
-      }
-    }
-
-    if (firstEmbed) {
-      loadEmbedVideo(firstEmbed);
-    } else {
-      const wrap = document.getElementById('videoWrap');
-      if (wrap) {
-        wrap.innerHTML = `
-          <div class="video-placeholder">
-            <i class="fa-solid fa-video-slash"></i>
-            <p>Chưa có video. Vui lòng thử lại sau.</p>
-          </div>`;
-      }
     }
 
     // Show content
@@ -962,12 +885,10 @@ function doSearch(keyword) {
       if (!searchResults) return;
       if (data.status === 'success' && data.data.items && data.data.items.length > 0) {
         searchResults.innerHTML = data.data.items.slice(0, 5).map(item => {
-          const img = item.thumb_url
-            ? (item.thumb_url.startsWith('http') ? item.thumb_url : `${cdnImage}${item.thumb_url}`)
-            : '';
+          const img = getImageUrl(item.thumb_url);
           return `
             <a href="phim.html?slug=${item.slug}" class="search-item-result">
-              <img src="${img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50x70/1a2332/9aa4b2?text=?'">
+              <img src="${img}" alt="${item.name}" onerror="this.src='${PLACEHOLDER_IMG}'">
               <div class="search-item-info">
                 <div class="search-item-name">${item.name}</div>
                 <div class="search-item-tags">
