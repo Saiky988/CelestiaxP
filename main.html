@@ -884,7 +884,7 @@ const theLoaiData = {
   }
 };
 
-const FALLBACK_CDN = "https://img.ophim.live/uploads/";
+const FALLBACK_CDN = "https://img.ophim.live/uploads/movies/";
 let cdnImage = FALLBACK_CDN;
 const BASE_API = "https://ophim1.com";
 const PLACEHOLDER_IMG = "https://via.placeholder.com/150x220/0b1220/9aa4b2?text=No+Image";
@@ -975,7 +975,6 @@ async function fetchHome() {
     const res = await fetch(`${BASE_API}/v1/api/home`);
     const data = await res.json();
     if (data.status === 'success' && data.data) {
-      if (data.data.APP_DOMAIN_CDN_IMAGE) cdnImage = data.data.APP_DOMAIN_CDN_IMAGE;
       renderCards(container, data.data.items || []);
     }
   } catch (err) {
@@ -992,7 +991,6 @@ async function fetchCountrySection(countrySlug) {
     const res = await fetch(`${BASE_API}/v1/api/quoc-gia/${countrySlug}?limit=12&sort_field=modified.time&sort_type=desc`);
     const data = await res.json();
     if (data.status === 'success' && data.data) {
-      if (data.data.APP_DOMAIN_CDN_IMAGE) cdnImage = data.data.APP_DOMAIN_CDN_IMAGE;
       renderCards(container, data.data.items || []);
     }
   } catch (err) {
@@ -1037,7 +1035,6 @@ async function fetchHeroMovies() {
     const data = await res.json();
 
     if (data.status === 'success' && data.data) {
-      if (data.data.APP_DOMAIN_CDN_IMAGE) cdnImage = data.data.APP_DOMAIN_CDN_IMAGE;
       const items = (data.data.items || []).slice(0, 5);
 
       heroSlider.querySelectorAll('.hero-slide').forEach(s => s.remove());
