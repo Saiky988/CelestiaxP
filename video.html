@@ -629,7 +629,6 @@ async function loadVideoPage(slug, epParam) {
     if (data.status !== 'success' || !data.data?.item) throw new Error('Not found');
 
     const movie = data.data.item;
-    if (data.data.APP_DOMAIN_CDN_IMAGE) cdnImage = data.data.APP_DOMAIN_CDN_IMAGE;
     movieData = movie;
     movieSlug = slug;
 
