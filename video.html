@@ -60,6 +60,13 @@
   .hamburger-btn:hover, .icon-btn:hover { background: rgba(255,255,255,.08); transform: scale(1.05); }
   .hamburger-btn:active, .icon-btn:active { transform: scale(0.95); }
   .hamburger-btn:hover .hamburger-icon, .icon-btn:hover i { color: var(--accent) !important; }
+  .hamburger-icon {
+    min-width: 20px; min-height: 20px;
+    display: inline-block !important;
+    visibility: visible !important;
+    transition: transform 0.4s ease;
+    will-change: transform;
+  }
 
   .brand {
     display: flex; align-items: center; text-decoration: none;
@@ -94,7 +101,7 @@
     border: 1px solid rgba(255,255,255,.08); border-radius: 16px;
     box-shadow: 0 20px 40px rgba(0,0,0,.6); opacity: 0; visibility: hidden;
     transform: translateY(-10px) scale(.98); transition: all .3s cubic-bezier(.4,0,.2,1);
-    pointer-events: none; z-index: 3000; display: flex !important; flex-direction: column; overflow: hidden;
+    pointer-events: none; z-index: 3000; display: flex !important; flex-direction: column; overflow-y: auto; max-height: 70vh;
   }
   .search-results-popup.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); pointer-events: auto; }
 
@@ -327,6 +334,64 @@
     .movie-info-title { font-size: 17px; }
     .search-input.open { width: 240px; }
   }
+
+  /* ── RIPPLE EFFECT ── */
+  @keyframes rippleOut { to { transform: scale(4); opacity: 0; } }
+  .ripple-wave {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    background: rgba(255,255,255,.22); transform: scale(0);
+    animation: rippleOut .55s linear forwards;
+  }
+  /* ── EP-BTN RIPPLE SUPPORT ── */
+  .ep-btn { position: relative; overflow: hidden; }
+  /* ── SEARCH SPINNER ── */
+  @keyframes spinRing { to { transform: translateY(-50%) rotate(360deg); } }
+  .search-spinner {
+    display: none; width: 14px; height: 14px;
+    border: 2px solid rgba(255,107,107,.2); border-top-color: var(--accent);
+    border-radius: 50%; animation: spinRing .65s linear infinite;
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    pointer-events: none; z-index: 10;
+  }
+  .search-spinner.active { display: block; }
+  /* ── PAGE FADE-IN ── */
+  @keyframes pageFadeIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .page-reveal { animation: pageFadeIn .45s cubic-bezier(.4,0,.2,1) forwards; }
+
+  /* ── BODY FADE-IN ── */
+  @keyframes bodyFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  body { animation: bodyFadeIn .45s ease both; max-width: 1400px; margin: 0 auto; }
+
+  /* ── WIDE SCREEN / TV & LANDSCAPE: search always visible, theater layout ── */
+  @media screen and (min-width: 1024px), screen and (orientation: landscape) {
+    .header-right .search-input {
+      position: relative !important; right: auto !important;
+      top: auto !important; transform: none !important;
+      width: 280px !important; overflow: visible !important;
+      transition: box-shadow .3s ease !important;
+    }
+    .brand.hide { opacity: 1 !important; transform: translateX(0) !important; pointer-events: auto !important; }
+    .search-anim-icon { display: none !important; }
+    #searchBtn i.fa-magnifying-glass { opacity: 1 !important; transform: none !important; }
+    .search-results-popup { width: 360px; }
+    /* Theater mode: full-width player */
+    .player-wrapper { max-width: 100%; }
+    .info-section { padding: 20px 40px 40px; }
+  }
+  @media (min-width: 1600px) {
+    header.app-header { padding: 0 clamp(16px, 3vw, 60px); }
+    .search-results-popup { width: 420px; }
+    .player-wrapper { max-width: 1400px; }
+    .info-section { max-width: 1400px; }
+  }
+  /* Mobile landscape: maximize player */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .player-wrapper { max-width: 100%; }
+    .info-section { padding: 12px 16px 20px; }
+  }
+  @media (orientation: landscape) {
+    .search-results-popup { max-height: 50vh !important; }
+  }
 </style>
 </head>
 <body>
@@ -335,7 +400,7 @@
   <header class="app-header" role="banner">
     <div class="header-left">
       <button class="hamburger-btn" id="hamburger" aria-label="menu">
-        <span class="hamburger-icon icon" data-step="1" style="font-size:18px;color:var(--text);display:inline-block;"></span>
+        <span class="hamburger-icon icon icon-frame_00" data-step="1" style="font-size:18px;color:var(--text);display:inline-block;"></span>
       </button>
       <a class="brand" href="main.html">
         <img src="https://raw.githubusercontent.com/Ebeexah/GioPhim/refs/heads/main/iimg/SotPhim.v1.png" alt="SotPhim">
@@ -345,6 +410,7 @@
     <div class="header-right">
       <div class="search-input" id="searchWrap">
         <input id="searchInput" type="search" placeholder="Tìm phim, diễn viên..." autocomplete="off" />
+        <span id="searchSpinner" class="search-spinner"></span>
       </div>
       <div id="searchResults" class="search-results-popup"></div>
       <button class="icon-btn" id="searchBtn" aria-label="Tìm kiếm" style="position:relative;">
@@ -523,9 +589,11 @@ function getImageUrl(path, cdnBase) {
 function loadIframe(embedUrl) {
   const wrapper = document.getElementById('playerWrapper');
   if (!wrapper || !embedUrl) return;
+  
   wrapper.innerHTML = `<iframe
     src="${embedUrl}"
     allowfullscreen
+    disablepictureinpicture
     allow="autoplay; fullscreen; encrypted-media"
     scrolling="no"
     referrerpolicy="origin"
@@ -591,6 +659,7 @@ function buildEpisodeArea(episodes) {
         : ep.name;
 
       // SPA-like: update player + URL without full reload
+      btn.addEventListener('mousedown', e => addRipple(btn, e));
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         activeEpName = ep.name;
@@ -604,8 +673,8 @@ function buildEpisodeArea(episodes) {
         btn.innerHTML = `<i class="fa-solid fa-circle-play"></i> ${ep.name}`;
         // Load iframe
         loadIframe(ep.link_embed);
-        // Scroll to top of player
-        document.querySelector('.player-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
       grid.appendChild(btn);
@@ -752,6 +821,7 @@ function setFrame(step) {
 }
 function animateHamburger(opening) {
   if (animationId) cancelAnimationFrame(animationId);
+  if (isWideScreen()) { setFrame(opening ? totalFrames : 0); return; }
   const start = opening ? 0 : totalFrames, end = opening ? totalFrames : 0;
   const dur = 175; let t0 = null;
   const step = ts => {
@@ -766,6 +836,21 @@ function openMenu()  { sideMenu.classList.add('open');    overlay.classList.add(
 function closeMenu() { sideMenu.classList.remove('open'); overlay.classList.remove('show'); animateHamburger(false); }
 
 // =============================================
+// RIPPLE EFFECT
+// =============================================
+function addRipple(el, e) {
+  const rect = el.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const x = e.clientX - rect.left - size / 2;
+  const y = e.clientY - rect.top - size / 2;
+  const wave = document.createElement('span');
+  wave.className = 'ripple-wave';
+  wave.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px;`;
+  el.appendChild(wave);
+  wave.addEventListener('animationend', () => wave.remove());
+}
+
+// =============================================
 // SEARCH
 // =============================================
 function setSearchFrame(step) {
@@ -775,6 +860,7 @@ function setSearchFrame(step) {
 }
 function animateSearchIcon(opening) {
   if (searchAnimationId) cancelAnimationFrame(searchAnimationId);
+  if (isWideScreen()) { setSearchFrame(opening ? 21 : 2); return; }
   const start = opening ? 2 : 21, end = opening ? 21 : 2;
   const dur = 180; let t0 = null;
   const step = ts => {
@@ -785,13 +871,19 @@ function animateSearchIcon(opening) {
   };
   searchAnimationId = requestAnimationFrame(step);
 }
+function isWideScreen() {
+  return window.matchMedia('(min-width:1024px)').matches || window.matchMedia('(orientation:landscape)').matches;
+}
+
 function openSearch() {
+  if (isWideScreen()) { searchInput?.focus(); return; }
   searchWrap.classList.add('open'); brand?.classList.add('hide');
   if (searchIcon) { searchIcon.style.opacity = '0'; searchIcon.style.transform = 'scale(.8)'; }
   searchAnimIcon?.classList.add('show'); setSearchFrame(2); animateSearchIcon(true);
   setTimeout(() => searchInput?.focus(), 100);
 }
 function closeSearch() {
+  if (isWideScreen()) return;
   if (!searchWrap?.classList.contains('open')) return;
   searchWrap.classList.remove('open'); searchResults?.classList.remove('show');
   animateSearchIcon(false);
@@ -864,18 +956,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initDropdowns();
 
+  if (iconContainer) iconContainer.classList.add('icon-frame_00');
+
   // Menu
   if (hamburger) hamburger.onclick = () => sideMenu.classList.contains('open') ? closeMenu() : openMenu();
   if (overlay)   overlay.onclick   = () => { closeMenu(); closeSearch(); };
-  if (searchBtn) searchBtn.onclick  = () => searchWrap.classList.contains('open') ? closeSearch() : openSearch();
+  if (searchBtn) searchBtn.onclick  = () => {
+    if (isWideScreen()) { searchInput?.focus(); return; }
+    searchWrap.classList.contains('open') ? closeSearch() : openSearch();
+  };
 
   // Search
   if (searchInput) {
     searchInput.oninput = e => {
       const kw = e.target.value.trim();
       clearTimeout(debounceTimer);
-      if (kw.length < 2) { searchResults?.classList.remove('show'); return; }
-      debounceTimer = setTimeout(() => doSearch(kw), 350);
+      const spinner = document.getElementById('searchSpinner');
+      if (kw.length < 2) {
+        searchResults?.classList.remove('show');
+        spinner?.classList.remove('active');
+        return;
+      }
+      spinner?.classList.add('active');
+      debounceTimer = setTimeout(() => {
+        spinner?.classList.remove('active');
+        doSearch(kw);
+      }, 500);
     };
     searchInput.onkeydown = e => {
       if (e.key === 'Enter' && searchInput.value.trim())
@@ -884,7 +990,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
   document.addEventListener('click', e => {
-    if (!e.target.closest('.header-right')) closeSearch();
+    if (!isWideScreen() && !e.target.closest('.header-right')) closeSearch();
   });
 
   // Read URL params and load
@@ -894,6 +1000,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadVideoPage(slug, ep);
 });
+
+if ('mediaSession' in navigator) {
+  const disableAction = () => { /* Không làm gì cả */ };
+  const actions = ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack'];
+  
+  actions.forEach(action => {
+    try {
+      navigator.mediaSession.setActionHandler(action, disableAction);
+    } catch (error) {
+    }
+  });
+
+  navigator.mediaSession.playbackState = 'none';
+}
+
+document.addEventListener('contextmenu', (e) => {
+  if (e.target.closest('.player-wrapper')) {
+    e.preventDefault();
+  }
+}, false);
+
 </script>
 </body>
 </html>
