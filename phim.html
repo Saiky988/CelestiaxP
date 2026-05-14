@@ -60,7 +60,13 @@
     .hamburger-btn:hover, .icon-btn:hover { background: rgba(255, 255, 255, 0.08); transform: scale(1.05); }
     .hamburger-btn:active, .icon-btn:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.04); }
     .hamburger-btn:hover .hamburger-icon, .icon-btn:hover i { color: var(--accent) !important; }
-    .hamburger-icon { transition: opacity 0.4s ease, transform 0.4s ease; }
+    .hamburger-icon {
+      min-width: 20px; min-height: 20px;
+      display: inline-block !important;
+      visibility: visible !important;
+      transition: transform 0.4s ease;
+      will-change: transform;
+    }
 
     .brand {
       display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -102,7 +108,7 @@
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 1px 1px 0 rgba(255, 255, 255, 0.05);
       opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.98);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;
-      flex-direction: column; overflow: hidden; z-index: 3000; display: flex !important;
+      flex-direction: column; overflow-y: auto; max-height: 70vh; z-index: 3000; display: flex !important;
     }
     .search-results-popup.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); pointer-events: auto; }
 
@@ -127,6 +133,30 @@
     .sk-tag { height: 10px; width: 40px; display: inline-block; }
 
     @media (max-width:700px){ .search-input.open { width: 245px; } }
+
+    /* ── RIPPLE EFFECT ── */
+    @keyframes rippleOut { to { transform: scale(4); opacity: 0; } }
+    .ripple-wave {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      background: rgba(255,255,255,.22); transform: scale(0);
+      animation: rippleOut .55s linear forwards;
+    }
+    /* ── SEARCH SPINNER ── */
+    @keyframes spinRing { to { transform: translateY(-50%) rotate(360deg); } }
+    .search-spinner {
+      display: none; width: 14px; height: 14px;
+      border: 2px solid rgba(255,107,107,.2); border-top-color: var(--accent);
+      border-radius: 50%; animation: spinRing .65s linear infinite;
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; z-index: 10;
+    }
+    .search-spinner.active { display: block; }
+    /* ── PAGE FADE-IN ── */
+    @keyframes pageFadeIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    .page-reveal { animation: pageFadeIn .45s cubic-bezier(.4,0,.2,1) forwards; }
+    /* ── BUTTON RIPPLE SUPPORT ── */
+    .watch-btn { position: relative; overflow: hidden; }
+    .action-btn { position: relative; overflow: hidden; }
 
     /* ===================== SIDE MENU ===================== */
     .side-menu {
@@ -324,10 +354,22 @@
       position: relative; background: #071422; padding: 0 20px 60px; z-index: 10;
     }
     .detail-container {
-      max-width: 900px; margin: 0 auto; background: rgba(16, 24, 40, 0.4);
-      backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.05);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      max-width: 900px; margin: 0 auto; position: relative; overflow: hidden;
+      background: rgba(12, 20, 36, 0.55);
+      backdrop-filter: blur(22px) saturate(160%); -webkit-backdrop-filter: blur(22px) saturate(160%);
+      border-radius: 20px; padding: 30px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 24px 70px rgba(0,0,0,.55), inset 1px 1px 0 rgba(255,255,255,.07), inset -1px -1px 0 rgba(0,0,0,.15);
+    }
+    .detail-container::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 10%, rgba(255,255,255,.14) 50%, transparent 90%);
+      pointer-events: none;
+    }
+    .detail-container::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 20%, rgba(255,107,107,.08) 50%, transparent 80%);
+      pointer-events: none;
     }
 
     .detail-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; justify-content: center; }
@@ -405,6 +447,31 @@
     .footer-links a { color: #9aa4b2; text-decoration: none; transition: .2s; }
     .footer-desc { max-width: 1000px; line-height: 1.6; margin-bottom: 25px; font-size: 11px; opacity: .8; }
     .footer-bottom { border-top: 1px solid rgba(255,255,255,.05); padding-top: 15px; font-size: 12px; opacity: .6; }
+
+    /* ── BODY FADE-IN ── */
+    @keyframes bodyFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    body { animation: bodyFadeIn .45s ease both; max-width: 1400px; margin: 0 auto; }
+
+    /* ── WIDE SCREEN / TV & LANDSCAPE: search always visible ── */
+    @media screen and (min-width: 1024px), screen and (orientation: landscape) {
+      .header-right .search-input {
+        position: relative !important; right: auto !important;
+        top: auto !important; transform: none !important;
+        width: 280px !important; overflow: visible !important;
+        transition: box-shadow .3s ease !important;
+      }
+      .brand.hide { opacity: 1 !important; transform: translateX(0) !important; pointer-events: auto !important; }
+      .search-anim-icon { display: none !important; }
+      #searchBtn i.fa-magnifying-glass { opacity: 1 !important; transform: none !important; }
+      .search-results-popup { width: 360px; }
+    }
+    @media (min-width: 1600px) {
+      header.app-header { padding: 0 clamp(16px, 3vw, 60px); }
+      .search-results-popup { width: 420px; }
+    }
+    @media (orientation: landscape) {
+      .search-results-popup { max-height: 50vh !important; }
+    }
   </style>
 </head>
 <body>
@@ -412,7 +479,7 @@
   <header class="app-header" role="banner">
     <div class="header-left">
       <button class="hamburger-btn" id="hamburger" aria-label="menu">
-        <span class="hamburger-icon icon" data-step="1" style="font-size:18px;color:var(--text);display:inline-block;transition:font-size 0.1s ease;"></span>
+        <span class="hamburger-icon icon icon-frame_00" data-step="1" style="font-size:18px;color:var(--text);display:inline-block;transition:font-size 0.1s ease;"></span>
       </button>
       <a class="brand" href="main.html">
         <img src="https://raw.githubusercontent.com/Ebeexah/GioPhim/refs/heads/main/iimg/SotPhim.v1.png" alt="SotPhim Logo">
@@ -424,6 +491,7 @@
     <div class="header-right">
       <div class="search-input" id="searchWrap" aria-hidden="true">
         <input id="searchInput" type="search" placeholder="Tìm phim, diễn viên..." autocomplete="off" />
+        <span id="searchSpinner" class="search-spinner"></span>
       </div>
       <div id="searchResults" class="search-results-popup"></div>
       <button class="icon-btn" id="searchBtn" aria-label="Tìm kiếm" style="position:relative;">
@@ -811,6 +879,7 @@ function setFrame(step) {
 }
 function animateHamburger(isOpening) {
   if (animationId) cancelAnimationFrame(animationId);
+  if (isWideScreen()) { setFrame(isOpening ? totalFrames : 0); return; }
   const start = isOpening ? 0 : totalFrames;
   const end = isOpening ? totalFrames : 0;
   const duration = 175; let startTime = null;
@@ -826,6 +895,21 @@ function openMenu() { sideMenu.classList.add('open'); overlay.classList.add('sho
 function closeMenu() { sideMenu.classList.remove('open'); overlay.classList.remove('show'); animateHamburger(false); }
 
 // =============================================
+// RIPPLE EFFECT
+// =============================================
+function addRipple(el, e) {
+  const rect = el.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const x = e.clientX - rect.left - size / 2;
+  const y = e.clientY - rect.top - size / 2;
+  const wave = document.createElement('span');
+  wave.className = 'ripple-wave';
+  wave.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px;`;
+  el.appendChild(wave);
+  wave.addEventListener('animationend', () => wave.remove());
+}
+
+// =============================================
 // SEARCH
 // =============================================
 function setSearchFrame(step) {
@@ -835,6 +919,7 @@ function setSearchFrame(step) {
 }
 function animateSearchIcon(opening) {
   if (searchAnimationId) cancelAnimationFrame(searchAnimationId);
+  if (isWideScreen()) { setSearchFrame(opening ? 21 : 2); return; }
   const start = opening ? 2 : 21; const end = opening ? 21 : 2;
   const duration = 180; let startTime = null;
   function step(ts) {
@@ -845,13 +930,19 @@ function animateSearchIcon(opening) {
   }
   searchAnimationId = requestAnimationFrame(step);
 }
+function isWideScreen() {
+  return window.matchMedia('(min-width:1024px)').matches || window.matchMedia('(orientation:landscape)').matches;
+}
+
 function openSearch() {
+  if (isWideScreen()) { searchInput?.focus(); return; }
   searchWrap.classList.add('open'); brand?.classList.add('hide');
   if (searchIcon) { searchIcon.style.opacity = '0'; searchIcon.style.transform = 'scale(.8)'; }
   searchAnimIcon?.classList.add('show'); setSearchFrame(2); animateSearchIcon(true);
   setTimeout(() => searchInput?.focus(), 100);
 }
 function closeSearch() {
+  if (isWideScreen()) return;
   if (!searchWrap?.classList.contains('open')) return;
   searchWrap.classList.remove('open'); searchResults?.classList.remove('show');
   animateSearchIcon(false);
@@ -921,16 +1012,36 @@ document.addEventListener('DOMContentLoaded', () => {
   setupActionBtn('.action-btn.like', 'Đã Yêu Thích', 'Yêu Thích');
   setupActionBtn('.action-btn.bookmark', 'Đã Thêm Vào', 'Thêm Vào');
 
+  // Ripple via delegation (works on dynamically rendered buttons)
+  document.body.addEventListener('mousedown', e => {
+    const btn = e.target.closest('.watch-btn, .action-btn');
+    if (btn) addRipple(btn, e);
+  });
+
+  if (iconContainer) iconContainer.classList.add('icon-frame_00');
+
   if (hamburger) hamburger.onclick = () => sideMenu.classList.contains('open') ? closeMenu() : openMenu();
   if (overlay) overlay.onclick = () => { closeMenu(); closeSearch(); };
-  if (searchBtn) searchBtn.onclick = () => searchWrap.classList.contains('open') ? closeSearch() : openSearch();
+  if (searchBtn) searchBtn.onclick = () => {
+    if (isWideScreen()) { searchInput?.focus(); return; }
+    searchWrap.classList.contains('open') ? closeSearch() : openSearch();
+  };
 
   if (searchInput) {
     searchInput.oninput = e => {
       const kw = e.target.value.trim();
       clearTimeout(debounceTimer);
-      if (kw.length < 2) { searchResults?.classList.remove('show'); return; }
-      debounceTimer = setTimeout(() => doSearch(kw), 350);
+      const spinner = document.getElementById('searchSpinner');
+      if (kw.length < 2) {
+        searchResults?.classList.remove('show');
+        spinner?.classList.remove('active');
+        return;
+      }
+      spinner?.classList.add('active');
+      debounceTimer = setTimeout(() => {
+        spinner?.classList.remove('active');
+        doSearch(kw);
+      }, 500);
     };
     searchInput.onkeydown = e => {
       if (e.key === 'Enter' && searchInput.value.trim()) {
@@ -941,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('click', e => {
-    if (!e.target.closest('.header-right')) closeSearch();
+    if (!isWideScreen() && !e.target.closest('.header-right')) closeSearch();
   });
 
   // Load movie from URL param

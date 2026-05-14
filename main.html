@@ -118,7 +118,11 @@
   }
 
   .hamburger-icon {
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    min-width: 20px; min-height: 20px;
+    display: inline-block !important;
+    visibility: visible !important;
+    transition: transform 0.4s ease;
+    will-change: transform;
   }
 
   .brand {
@@ -231,7 +235,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: none;
     flex-direction: column;
-    overflow: hidden;
+    overflow-y: auto; max-height: 70vh;
     z-index: 3000;
     display: flex !important;
   }
@@ -561,8 +565,8 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   .card-item:hover .card-poster {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    transform: translateY(-7px) scale(1.03);
+    box-shadow: 0 20px 50px rgba(0,0,0,.7), 0 0 0 1.5px rgba(255,107,107,.35), 0 0 28px rgba(255,107,107,.1);
   }
 
   .card-poster img.poster-img {
@@ -702,6 +706,82 @@
   }
   .section-header h2 { margin: 0; font-size: 18px; font-weight: 600; }
   .section-header a { color: var(--accent); text-decoration: none; font-size: 13px; }
+
+  /* ── RIPPLE EFFECT ── */
+  @keyframes rippleOut { to { transform: scale(4); opacity: 0; } }
+  .ripple-wave {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    background: rgba(255,255,255,.22); transform: scale(0);
+    animation: rippleOut .55s linear forwards;
+  }
+
+  /* ── SEARCH SPINNER ── */
+  @keyframes spinRing { to { transform: translateY(-50%) rotate(360deg); } }
+  .search-spinner {
+    display: none; width: 14px; height: 14px; flex-shrink: 0;
+    border: 2px solid rgba(255,107,107,.2); border-top-color: var(--accent);
+    border-radius: 50%; animation: spinRing .65s linear infinite;
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    pointer-events: none; z-index: 10;
+  }
+  .search-spinner.active { display: block; }
+
+  /* ── PAGE CONTENT FADE-IN ── */
+  @keyframes pageFadeIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  .page-reveal { animation: pageFadeIn .45s cubic-bezier(.4,0,.2,1) forwards; }
+
+  /* ── CARD POSTER OVERLAY ON HOVER ── */
+  .card-poster::after {
+    content: ''; position: absolute; inset: 0; border-radius: 12px;
+    background: linear-gradient(to top, rgba(255,107,107,.12) 0%, transparent 60%);
+    opacity: 0; transition: opacity .3s ease; pointer-events: none; z-index: 1;
+  }
+  .card-item:hover .card-poster::after { opacity: 1; }
+
+  /* ── BODY FADE-IN ── */
+  @keyframes bodyFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  body { animation: bodyFadeIn .45s ease both; max-width: 1400px; margin: 0 auto; }
+
+  /* ── WIDE SCREEN / TV & LANDSCAPE: search always visible ── */
+  @media screen and (min-width: 1024px), screen and (orientation: landscape) {
+    .header-right .search-input {
+      position: relative !important; right: auto !important;
+      top: auto !important; transform: none !important;
+      width: 280px !important; overflow: visible !important;
+      transition: box-shadow .3s ease !important;
+    }
+    .brand.hide { opacity: 1 !important; transform: translateX(0) !important; pointer-events: auto !important; }
+    .search-anim-icon { display: none !important; }
+    #searchBtn i.fa-magnifying-glass { opacity: 1 !important; transform: none !important; }
+    .search-results-popup { width: 360px; }
+  }
+
+  /* ── CARD GRID ON LARGE SCREENS ── */
+  @media (min-width: 768px) {
+    .cards-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      overflow-x: visible; scroll-snap-type: none;
+      gap: 14px; padding: 5px 20px 20px;
+      max-width: 1600px; margin-left: auto; margin-right: auto;
+    }
+    .card-item { flex: none; width: 100%; }
+  }
+  @media (min-width: 1200px) {
+    .cards-wrapper { padding: 5px 48px 20px; gap: 18px; }
+    .section-header { padding: 0 48px; }
+    .genre-slider { padding: 10px 48px 25px; overflow-x: visible; flex-wrap: wrap; }
+  }
+  @media (min-width: 1600px) {
+    header.app-header { padding: 0 clamp(16px, 3vw, 60px); }
+    .hero-slider { max-width: 1400px; }
+    .search-results-popup { width: 420px; }
+  }
+  /* ── LANDSCAPE: keep hero compact, popup smaller ── */
+  @media (orientation: landscape) {
+    .hero-slider { max-height: min(50vh, 400px); aspect-ratio: unset; overflow: hidden; }
+    .search-results-popup { max-height: 50vh !important; }
+  }
 </style>
 </head>
 <body>
@@ -709,7 +789,7 @@
   <header class="app-header" role="banner">
     <div class="header-left">
       <button class="hamburger-btn" id="hamburger" aria-label="menu">
-        <span class="hamburger-icon icon" data-step="1" style="font-size:18px;color:var(--text);display:inline-block;transition:font-size 0.1s ease;"></span>
+        <span class="hamburger-icon icon icon-frame_00" data-step="1" style="font-size:18px;color:var(--text);display:inline-block;transition:font-size 0.1s ease;"></span>
       </button>
       <a class="brand" href="main.html">
         <img src="https://raw.githubusercontent.com/Ebeexah/GioPhim/refs/heads/main/iimg/SotPhim.v1.png" alt="SotPhim Logo">
@@ -721,6 +801,7 @@
     <div class="header-right">
       <div class="search-input" id="searchWrap" aria-hidden="true">
         <input id="searchInput" type="search" placeholder="Tìm phim, diễn viên..." autocomplete="off" />
+        <span id="searchSpinner" class="search-spinner"></span>
       </div>
       <div id="searchResults" class="search-results-popup"></div>
       <button class="icon-btn" id="searchBtn" aria-label="Tìm kiếm" style="position:relative;">
@@ -733,7 +814,7 @@
   <nav class="side-menu" id="sidemenu" aria-label="Menu main">
     <div class="menu-list" role="menu">
       <a href="main.html" role="menuitem"><i class="fa-regular fa-house" style="width:22px;text-align:center"></i> Trang Chủ</a>
-      <a href="main.html" role="menuitem"><i class="fa-solid fa-film" style="width:22px;text-align:center"></i> Phim Mới</a>
+      <a href="new-movie.html" role="menuitem"><i class="fa-solid fa-film" style="width:22px;text-align:center"></i> Phim Mới</a>
 
       <div class="menu-item-dropdown">
         <div class="dropdown-trigger" id="dropKhuVuc">
@@ -781,41 +862,41 @@
       <h2 style="font-weight: 600;">Bạn đang quan tâm gì?</h2>
     </div>
     <div class="genre-slider">
-      <a href="javascript:void(0)" onclick="loadCategory('hanh-dong')" class="genre-item bg-action"><span class="genre-title">Hành Động</span></a>
-      <a href="javascript:void(0)" onclick="loadCategory('vien-tuong')" class="genre-item bg-sci-fi"><span class="genre-title">Viễn Tưởng</span></a>
-      <a href="javascript:void(0)" onclick="loadCategory('tinh-cam')" class="genre-item bg-romance"><span class="genre-title">Tình Cảm</span></a>
-      <a href="javascript:void(0)" onclick="loadCategory('hai-huoc')" class="genre-item bg-comedy"><span class="genre-title">Hài Hước</span></a>
-      <a href="javascript:void(0)" onclick="loadCategory('bi-an')" class="genre-item bg-mystery"><span class="genre-title">Bí Ẩn</span></a>
-      <a href="javascript:void(0)" onclick="loadCategory('chinh-kich')" class="genre-item bg-drama"><span class="genre-title">Chính Kịch</span></a>
-      <a href="javascript:void(0)" onclick="loadCategory('hinh-su')" class="genre-item bg-crime"><span class="genre-title">Hình Sự</span></a>
-      <a href="javascript:void(0)" onclick="loadCategory('hoat-hinh')" class="genre-item bg-anime"><span class="genre-title">Hoạt Hình</span></a>
-      <a href="javascript:void(0)" onclick="loadCategory('gia-dinh')" class="genre-item bg-family"><span class="genre-title">Gia Đình</span></a>
-      <a href="javascript:void(0)" onclick="loadCategory('tai-lieu')" class="genre-item bg-documentary"><span class="genre-title">Tài Liệu</span></a>
+      <a href="genre.html?slug=hanh-dong" class="genre-item bg-action"><span class="genre-title">Hành Động</span></a>
+      <a href="genre.html?slug=vien-tuong" class="genre-item bg-sci-fi"><span class="genre-title">Viễn Tưởng</span></a>
+      <a href="genre.html?slug=tinh-cam" class="genre-item bg-romance"><span class="genre-title">Tình Cảm</span></a>
+      <a href="genre.html?slug=hai-huoc" class="genre-item bg-comedy"><span class="genre-title">Hài Hước</span></a>
+      <a href="genre.html?slug=bi-an" class="genre-item bg-mystery"><span class="genre-title">Bí Ẩn</span></a>
+      <a href="genre.html?slug=chinh-kich" class="genre-item bg-drama"><span class="genre-title">Chính Kịch</span></a>
+      <a href="genre.html?slug=hinh-su" class="genre-item bg-crime"><span class="genre-title">Hình Sự</span></a>
+      <a href="genre.html?slug=hoat-hinh" class="genre-item bg-anime"><span class="genre-title">Hoạt Hình</span></a>
+      <a href="genre.html?slug=gia-dinh" class="genre-item bg-family"><span class="genre-title">Gia Đình</span></a>
+      <a href="genre.html?slug=tai-lieu" class="genre-item bg-documentary"><span class="genre-title">Tài Liệu</span></a>
     </div>
   </section>
 
   <!-- COUNTRY SECTIONS -->
   <div class="section-header" style="margin-top:20px;">
     <h2>Phim Hàn Quốc Mới</h2>
-    <a href="javascript:void(0)" onclick="loadCountry('han-quoc')">Xem tất cả</a>
+    <a href="country.html?slug=han-quoc">Xem tất cả</a>
   </div>
   <section id="han-quoc" class="cards-wrapper"></section>
 
   <div class="section-header" style="margin-top:15px;">
     <h2>Phim Trung Quốc Mới</h2>
-    <a href="javascript:void(0)" onclick="loadCountry('trung-quoc')">Xem tất cả</a>
+    <a href="country.html?slug=trung-quoc">Xem tất cả</a>
   </div>
   <section id="trung-quoc" class="cards-wrapper"></section>
 
   <div class="section-header" style="margin-top:20px;">
     <h2>Phim Thái Lan Mới</h2>
-    <a href="javascript:void(0)" onclick="loadCountry('thai-lan')">Xem tất cả</a>
+    <a href="country.html?slug=thai-lan">Xem tất cả</a>
   </div>
   <section id="thai-lan" class="cards-wrapper"></section>
 
   <div class="section-header" style="margin-top:20px;">
     <h2>Phim Việt Nam Mới</h2>
-    <a href="javascript:void(0)" onclick="loadCountry('viet-nam')">Xem tất cả</a>
+    <a href="country.html?slug=viet-nam">Xem tất cả</a>
   </div>
   <section id="viet-nam" class="cards-wrapper"></section>
 
@@ -1131,6 +1212,7 @@ function setFrame(step) {
 
 function animateHamburger(isOpening) {
   if (animationId) cancelAnimationFrame(animationId);
+  if (isWideScreen()) { setFrame(isOpening ? totalFrames : 0); return; }
   const start = isOpening ? 0 : totalFrames;
   const end = isOpening ? totalFrames : 0;
   const duration = 175;
@@ -1149,6 +1231,21 @@ function openMenu() { sideMenu.classList.add('open'); overlay.classList.add('sho
 function closeMenu() { sideMenu.classList.remove('open'); overlay.classList.remove('show'); animateHamburger(false); }
 
 // =============================================
+// RIPPLE EFFECT
+// =============================================
+function addRipple(el, e) {
+  const rect = el.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const x = e.clientX - rect.left - size / 2;
+  const y = e.clientY - rect.top - size / 2;
+  const wave = document.createElement('span');
+  wave.className = 'ripple-wave';
+  wave.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px;`;
+  el.appendChild(wave);
+  wave.addEventListener('animationend', () => wave.remove());
+}
+
+// =============================================
 // SEARCH
 // =============================================
 function setSearchFrame(step) {
@@ -1159,6 +1256,7 @@ function setSearchFrame(step) {
 
 function animateSearchIcon(opening) {
   if (searchAnimationId) cancelAnimationFrame(searchAnimationId);
+  if (isWideScreen()) { setSearchFrame(opening ? 21 : 2); return; }
   const start = opening ? 2 : 21;
   const end = opening ? 21 : 2;
   const duration = 180;
@@ -1172,7 +1270,12 @@ function animateSearchIcon(opening) {
   searchAnimationId = requestAnimationFrame(step);
 }
 
+function isWideScreen() {
+  return window.matchMedia('(min-width:1024px)').matches || window.matchMedia('(orientation:landscape)').matches;
+}
+
 function openSearch() {
+  if (isWideScreen()) { searchInput?.focus(); return; }
   searchWrap.classList.add('open');
   brand?.classList.add('hide');
   if (searchIcon) { searchIcon.style.opacity = '0'; searchIcon.style.transform = 'scale(.8)'; }
@@ -1183,6 +1286,7 @@ function openSearch() {
 }
 
 function closeSearch() {
+  if (isWideScreen()) return;
   if (!searchWrap?.classList.contains('open')) return;
   searchWrap.classList.remove('open');
   searchResults?.classList.remove('show');
@@ -1247,8 +1351,8 @@ function doSearch(keyword) {
 // =============================================
 function initDropdowns() {
   const configs = [
-    { triggerId: 'dropKhuVuc', containerId: 'listKhuVuc', data: khuVucData.data.items, path: 'quoc-gia' },
-    { triggerId: 'dropTheLoai', containerId: 'listTheLoai', data: theLoaiData.data.items, path: 'the-loai' }
+    { triggerId: 'dropKhuVuc', containerId: 'listKhuVuc', data: khuVucData.data.items, path: 'country.html?slug=' },
+    { triggerId: 'dropTheLoai', containerId: 'listTheLoai', data: theLoaiData.data.items, path: 'genre.html?slug=' }
   ];
 
   configs.forEach(conf => {
@@ -1257,7 +1361,7 @@ function initDropdowns() {
     if (!container || !trigger) return;
 
     container.innerHTML = conf.data.map(item =>
-      `<a href="javascript:void(0)" onclick="loadCategory('${item.slug}')" role="menuitem">${item.name}</a>`
+      `<a href="${conf.path}${item.slug}" role="menuitem">${item.name}</a>`
     ).join('');
 
     trigger.addEventListener('click', e => {
@@ -1286,17 +1390,30 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('footerYear').textContent = new Date().getFullYear();
 
   initDropdowns();
+  if (iconContainer) iconContainer.classList.add('icon-frame_00');
 
   if (hamburger) hamburger.onclick = () => sideMenu.classList.contains('open') ? closeMenu() : openMenu();
   if (overlay) overlay.onclick = () => { closeMenu(); closeSearch(); };
-  if (searchBtn) searchBtn.onclick = () => searchWrap.classList.contains('open') ? closeSearch() : openSearch();
+  if (searchBtn) searchBtn.onclick = () => {
+    if (isWideScreen()) { searchInput?.focus(); return; }
+    searchWrap.classList.contains('open') ? closeSearch() : openSearch();
+  };
 
   if (searchInput) {
     searchInput.oninput = e => {
       const kw = e.target.value.trim();
       clearTimeout(debounceTimer);
-      if (kw.length < 2) { searchResults?.classList.remove('show'); return; }
-      debounceTimer = setTimeout(() => doSearch(kw), 350);
+      const spinner = document.getElementById('searchSpinner');
+      if (kw.length < 2) {
+        searchResults?.classList.remove('show');
+        spinner?.classList.remove('active');
+        return;
+      }
+      spinner?.classList.add('active');
+      debounceTimer = setTimeout(() => {
+        spinner?.classList.remove('active');
+        doSearch(kw);
+      }, 500);
     };
     searchInput.onkeydown = e => {
       if (e.key === 'Enter' && searchInput.value.trim()) {
@@ -1307,7 +1424,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('click', e => {
-    if (!e.target.closest('.header-right')) closeSearch();
+    if (!isWideScreen() && !e.target.closest('.header-right')) closeSearch();
+  });
+
+  // Ripple on genre items
+  document.addEventListener('mousedown', e => {
+    const el = e.target.closest('.genre-item');
+    if (el) addRipple(el, e);
   });
 
   // Load all data in parallel
