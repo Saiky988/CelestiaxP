@@ -1025,5 +1025,90 @@ document.addEventListener('contextmenu', (e) => {
 }, false);
 
 </script>
+
+<!-- ANTI PiP SYSTEM -->
+<script>
+(function() {
+  'use strict';
+
+  // 1. Hàm trừng phạt khi phát hiện PiP
+  const punishPiP = () => {
+    console.log("PiP Detected! Action: Resetting...");
+    const content = document.getElementById('pageContent');
+    if (content) {
+      content.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:60vh; color:#ff6b6b; text-align:center; padding:20px;">
+          <i class="fa-solid fa-ban" style="font-size:50px; margin-bottom:15px;"></i>
+          <h2 style="margin:0;">Picture-in-Picture bị cấm!</h2>
+          <p style="color:#9aa4b2;">Vui lòng xem phim trực tiếp trên trình duyệt.</p>
+          <div style="margin-top:20px; font-size:12px; color:#555;">Đang tải lại trang...</div>
+        </div>
+      `;
+    }
+    
+    // Tải lại trang sau 2 giây
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+  };
+
+  // 2. Chặn PiP thông qua Standard API (Chrome, Edge, Firefox)
+  document.addEventListener('enterpictureinpicture', (e) => {
+    e.preventDefault();
+    punishPiP();
+  }, true);
+
+  // 3. Đặc trị iOS & Safari (WebKit)
+  // Theo dõi sự kiện thay đổi chế độ hiển thị của video
+  document.addEventListener('webkitpresentationmodechanged', (e) => {
+    if (e.target.webkitPresentationMode === 'picture-in-picture') {
+      // Ép thoát khỏi PiP ngay lập tức nếu có thể
+      if (e.target.webkitSetPresentationMode) {
+        e.target.webkitSetPresentationMode('inline');
+      }
+      punishPiP();
+    }
+  }, true);
+
+  // 4. Watcher: Quét định kỳ để xử lý các Iframe cứng đầu
+  setInterval(() => {
+    // Tìm tất cả các thẻ video (kể cả những thẻ phát sinh ngầm)
+    const videos = document.querySelectorAll('video');
+    videos.forEach(video => {
+      // Vô hiệu hóa thuộc tính PiP liên tục
+      if (!video.disablePictureInPicture) {
+        video.disablePictureInPicture = true;
+      }
+
+      // Kiểm tra trạng thái trên iOS
+      if (video.webkitPresentationMode === 'picture-in-picture') {
+        punishPiP();
+      }
+    });
+
+    // Kiểm tra Standard API
+    if (document.pictureInPictureElement) {
+      punishPiP();
+    }
+  }, 1000);
+
+  // 5. Cấu hình lại Iframe khi nó được tạo ra
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.tagName === 'IFRAME') {
+          node.setAttribute('disablepictureinpicture', 'true');
+          // Chặn PiP thông qua policy
+          node.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture "none"');
+        }
+      });
+    });
+  });
+
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+
+})();
+</script>
+
 </body>
 </html>
